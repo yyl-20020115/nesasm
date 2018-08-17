@@ -41,6 +41,7 @@ char   in_fname[128];	/* file names, input */
 char  out_fname[128];	/* output */
 char  bin_fname[128];	/* binary */
 char  lst_fname[128];	/* listing */
+char  sym_fname[128];	/* symbols */
 char *prg_name;	/* program name */
 FILE *in_fp;	/* file pointers, input */
 FILE *lst_fp;	/* listing */
@@ -55,6 +56,7 @@ int   run_opt;
 int   scd_opt;
 int   cd_opt;
 int   mx_opt;
+int   sym_opt;
 int   mlist_opt;	/* macro listing main flag */
 int   xlist;		/* listing file main flag */
 int   list_level;	/* output level */
@@ -106,6 +108,7 @@ main(int argc, char **argv)
 	scd_opt = 0;
 	cd_opt = 0;
 	mx_opt = 0;
+	sym_opt = 0;
 	file = 0;
 	zero_fill = 0;
 	out_stdout = 0;
@@ -143,6 +146,10 @@ main(int argc, char **argv)
 				/* output s-record file */
 				else if (!strcmp(argv[i], "-srec"))
 					srec_opt = 1;
+
+				/* output FCEUX symbols file */
+				else if (!strcmp(argv[i], "-sym"))
+					sym_opt = 1;
 
 				/* output level */
 				else if (!strncmp(argv[i], "-l", 2)) {
@@ -213,8 +220,10 @@ main(int argc, char **argv)
 	strcpy(out_fname, in_fname);
 	strcpy(bin_fname, in_fname);
 	strcpy(lst_fname, in_fname);
+	strcpy(sym_fname, in_fname);
 	strcat(bin_fname, (cd_opt || scd_opt) ? ".bin" : machine->rom_ext);
 	strcat(lst_fname, ".lst");
+	strcat(sym_fname, machine->rom_ext);
 
 	if (p)
 	   *p = '.';
@@ -514,6 +523,9 @@ main(int argc, char **argv)
 	if (dump_seg)
 		show_seg_usage();
 
+	if (sym_opt)
+		stlist(sym_fname);
+
 	/* ok */
 	return(0);
 }
@@ -582,6 +594,7 @@ help(void)
 		printf("-mx    : create a Develo MX file\n");
 	}
 	printf("-srec  : create a Motorola S-record file\n");
+	printf("-sym   : create a FCEUX debugger symbols file\n");
 	printf("-z     : fill unused space in ROM with zeroes\n");
 	printf("         NOTE: Makes segment usage information inaccurate\n");
 	printf("infile : file to be assembled\n");

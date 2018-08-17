@@ -87,6 +87,66 @@ colsym(int *ip)
 	return (i);
 }
 
+FILE* stlist_file(FILE *fp, char * basename, int n)
+{
+	if (fp) return fp;
+	char fname[256];
+	strcpy(fname, basename);
+	if (n < 0)
+		strcat(fname, ".ram.nl");
+	else {
+		char ext[16];
+		sprintf(ext, ".%d.nl", n);
+		strcat(fname, ext);
+	}
+	if ((fp = fopen(fname, "w")) == NULL) {
+		printf("can not open file '%s'!\n", fname);
+		return 0;
+	}
+	return fp;
+}
+
+void stlist(char *file)
+{
+	struct t_symbol *sym;
+	struct t_symbol *local;
+	FILE *files[256];
+	memset(files, 0, sizeof(files)); 
+	int i, bank, fnum;
+	for (i = 0; i < sizeof(hash_tbl) / sizeof(hash_tbl[0]); i++)
+	{
+		sym = hash_tbl[i];
+		if (!sym) continue;
+		do
+		{
+			/* predefined symbols */
+			if (strcmp(sym->name+1, "MAGICKIT") == 0) continue;
+			if (strcmp(sym->name+1, "DEVELO") == 0) continue;
+			if (strcmp(sym->name+1, "CDROM") == 0) continue;
+			if (strcmp(sym->name+1, "_bss_end") == 0) continue;
+			if (strcmp(sym->name+1, "_bank_base") == 0) continue;
+			if (strcmp(sym->name+1, "_nb_bank") == 0) continue;
+			if (strcmp(sym->name+1, "_call_bank") == 0) continue;
+
+			bank = sym->value < 0x8000 ? -1 : sym-> bank/2;
+			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*)-1);	
+			files[fnum] = stlist_file(files[fnum], file, bank);
+			fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
+			local = sym->local;
+			while (local)
+			{
+				bank = sym->value < 0x8000 ? -1 : sym-> bank/2;
+				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*)-1);	
+				files[fnum] = stlist_file(files[fnum], file, bank);
+				fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
+	       			local = local->next;
+			}
+		} while (sym = sym->next);
+	}
+	for (i = 0; i < sizeof(files) / sizeof(FILE*); i++)
+		if (files[i])
+			fclose(files[i]);
+}
 
 /* ----
  * stlook()
