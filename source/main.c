@@ -507,6 +507,9 @@ main(int argc, char **argv)
 	/* close input file */
 	fclose(in_fp);
 
+	if (errcnt)
+		return(1);
+
 	/* dump the bank table */
 	if (dump_seg)
 		show_seg_usage();
