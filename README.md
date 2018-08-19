@@ -23,7 +23,7 @@ Just another modification of nesasm. Based on modification by Tim Hentenaar whic
       -s, --segment-usage        Show (more) segment usage
       -?, --help                 Give this help list
           --usage                Give a short usage message
-
+      -V, --version              Print program version
 
 The assembler accepts only one input file 'infile' that will be assembled  into ROM file (.NES extension) directly useable  by an emulator.
 

@@ -59,6 +59,8 @@ int   asm_opt[8];	/* assembler options */
 
 /* Program description. */
 static char program_desc[] = "nesasm CE v3.0 - a 6502 assembler with specific NES support";
+const char *argp_program_version = program_desc;
+const char *argp_program_bug_address = "clusterrr@clusterrr.com";
 
 /* Program arguments description. */
 static char argp_program_args_desc[] = "<source.asm>";
