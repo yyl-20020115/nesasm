@@ -6,7 +6,7 @@
 #include "externs.h"
 #include "protos.h"
 
-int in_if;			/* set when we are in an .if statement */
+int in_if;		/* set when we are in an .if statement */
 int if_expr;		/* set when parsing an .if expression */
 int if_level;		/* level of nested .if's */
 int if_state[256];	/* status when entering the .if */

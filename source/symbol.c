@@ -120,9 +120,6 @@ void stlist(char *file)
 		do
 		{
 			/* predefined symbols */
-			if (strcmp(sym->name+1, "MAGICKIT") == 0) continue;
-			if (strcmp(sym->name+1, "DEVELO") == 0) continue;
-			if (strcmp(sym->name+1, "CDROM") == 0) continue;
 			if (strcmp(sym->name+1, "_bss_end") == 0) continue;
 			if (strcmp(sym->name+1, "_bank_base") == 0) continue;
 			if (strcmp(sym->name+1, "_nb_bank") == 0) continue;
@@ -141,7 +138,7 @@ void stlist(char *file)
 				fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
 	       			local = local->next;
 			}
-		} while (sym = sym->next);
+		} while ((sym = sym->next) != NULL);
 	}
 	for (i = 0; i < sizeof(files) / sizeof(FILE*); i++)
 		if (files[i])

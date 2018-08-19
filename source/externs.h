@@ -23,13 +23,7 @@ extern int if_expr;	/* set when parsing an .if expression */
 extern int if_level;	/* level of nested .if's */
 extern int skip_lines;	/* when true skip lines */
 extern int continued_line;	/* set when a line is the continuation of another line */
-extern int pcx_w, pcx_h;	/* PCX dimensions */
-extern int pcx_nb_colors;	/* number of colors (16/256) in the PCX */
-extern int pcx_nb_args;		/* number of argument */
-extern unsigned int   pcx_arg[8];	/* PCX args array */
-extern unsigned char *pcx_buf;	/* pointer to the PCX buffer */
-extern unsigned char  pcx_pal[256][3];	/* palette */
-extern unsigned char *expr;	/* expression string pointer */
+extern char *expr;	/* expression string pointer */
 extern int  mopt;
 extern int  in_macro;
 extern int  expand_macro;
@@ -55,7 +49,6 @@ extern FILE	*lst_fp;	/* listing */
 extern struct t_input_info input_file[8];
 extern struct t_machine *machine;
 extern struct t_machine  nes;
-extern struct t_machine  pce;
 extern struct t_opcode *inst_tbl[256];	/* instructions hash table */
 extern struct t_symbol *hash_tbl[256];	/* label hash table */
 extern struct t_symbol *lablptr;	/* label pointer into symbol table */

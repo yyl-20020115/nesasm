@@ -558,29 +558,12 @@ void
 do_incbin(int *ip)
 {
 	FILE *fp;
-	char *p;
-	char fname[128];
+	char fname[256];
 	int  size;
 
 	/* get file name */
-	if (!getstring(ip, fname, 127))
+	if (!getstring(ip, fname, 255))
 		return;
-
-	/* get file extension */
-	if ((p = strrchr(fname, '.')) != NULL) {
-		if (!strchr(p, PATH_SEPARATOR)) {
-			/* check if it's a mx file */
-			if (!strcasecmp(p, ".mx")) {
-				do_mx(fname);
-				return;
-			}
-			/* check if it's a map file */
-			if (!strcasecmp(p, ".fmp")) {
-				if (pce_load_map(fname, 0))
-					return;
-			}
-		}
-	}
 
 	/* define label */
 	labldef(loccnt, 1);
@@ -609,7 +592,13 @@ do_incbin(int *ip)
 
 	/* load data on last pass */
 	if (pass == LAST_PASS) {
-		fread(&rom[bank][loccnt], 1, size, fp);
+		int readpos = 0;
+		while (readpos < size)
+		{
+			int r = fread(&rom[bank][loccnt]+readpos, 1, size-readpos, fp);
+			if (r <= 0) fatal_error("Can not read file");
+			readpos += r;
+		}
 		memset(&map[bank][loccnt], section + (page << 5), size);
 
 		/* output line */
@@ -1010,69 +999,6 @@ do_section(int *ip)
 		loadlc(loccnt + (page << 13), 1);
 		println();
 	}
-}
-
-
-/* ----
- * do_incchr()
- * ----
- * .inchr pseudo - convert a PCX to 8x8 character tiles
- */
-
-void
-do_incchr(int *ip)
-{
-	unsigned char buffer[32];
-	unsigned int i, j;
-	unsigned int x, y, w, h;
-	unsigned int tx, ty;
-	int total = 0;
-	int size;
-
-	/* define label */
-	labldef(loccnt, 1);
-
-	/* output */
-	if (pass == LAST_PASS)
-		loadlc(loccnt, 0);
-
-	/* get args */
-	if (!pcx_get_args(ip))
-		return;
-	if (!pcx_parse_args(0, pcx_nb_args, &x, &y, &w, &h, 8))
-		return;
-
-	/* pack data */
-	for (i = 0; i < h; i++) {
-		for (j = 0; j < w; j++) {
-			/* tile coordinates */
-			tx = x + (j << 3);
-			ty = y + (i << 3);
-
-			/* get tile */
-			size   = pcx_pack_8x8_tile(buffer, tx, ty);
-			total += size;
-
-			/* store tile */
-			putbuffer(buffer, size);
-		}
-	}
-
-	/* size */
-	if (lablptr) {
-		lablptr->data_type = P_INCCHR;
-		lablptr->data_size = total;
-	}
-	else {
-		if (lastlabl) {
-			if (lastlabl->data_type == P_INCCHR)
-				lastlabl->data_size += total;
-		}
-	}
-
-	/* output */
-	if (pass == LAST_PASS)
-		println();
 }
 
 

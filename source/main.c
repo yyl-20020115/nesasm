@@ -18,6 +18,11 @@
  *
  *  NES version by:
  *    Charles Doty
+ *
+ *  Modifications by:
+ *    Bob Rost
+ *    Alexey Avdyukhin
+ *
  */
 
 #include <stdio.h>
@@ -25,23 +30,19 @@
 #include <strings.h>
 #include <string.h>
 #include <ctype.h>
+#include <argp.h>
 #include "defs.h"
 #include "externs.h"
 #include "protos.h"
 #include "vars.h"
 #include "inst.h"
 
-/* defines */
-#define STANDARD_CD	1
-#define SUPER_CD	2
-
 /* variables */
 unsigned char ipl_buffer[4096];
-char   in_fname[128];	/* file names, input */
-char  out_fname[128];	/* output */
-char  bin_fname[128];	/* binary */
-char  lst_fname[128];	/* listing */
-char  sym_fname[128];	/* symbols */
+char   *in_fname;	/* file names, input */
+char  bin_fname[256];	/* binary */
+char  lst_fname[256];	/* listing */
+char  sym_fname[256];	/* symbols */
 char *prg_name;	/* program name */
 FILE *in_fp;	/* file pointers, input */
 FILE *lst_fp;	/* listing */
@@ -49,19 +50,86 @@ char  section_name[4][8] = { "  ZP", " BSS", "CODE", "DATA" };
 int   dump_seg;
 int   zero_fill;
 int   out_stdout;
-int   develo_opt;
 int   header_opt;
-int   srec_opt;
-int   run_opt;
-int   scd_opt;
-int   cd_opt;
-int   mx_opt;
-int   sym_opt;
+int   sym_opt; /* export symbols for FCEUX flag */
 int   mlist_opt;	/* macro listing main flag */
 int   xlist;		/* listing file main flag */
 int   list_level;	/* output level */
 int   asm_opt[8];	/* assembler options */
 
+/* Program description. */
+static char program_desc[] = "nesasm CE v3.0 - a 6502 assembler with specific NES support";
+
+/* Program arguments description. */
+static char argp_program_args_desc[] = "<source.asm>";
+
+/* The options we understand. */
+static struct argp_option options[] = {
+	{ "segment-usage", 's', 0, 0, "Show (more) segment usage" },
+	{ 0, 'S', 0, OPTION_HIDDEN, "" },
+	{ "macro-expansion", 'm', 0, 0, "Force macro expansion in listing" },
+	{ "raw", 'r', 0, 0, "Prevent adding a ROM header" },
+	{ "symbols", 'f', "PREFIX", OPTION_ARG_OPTIONAL, "Create FCEUX symbol files" },
+	{ "listing-level", 'l', "#", 0, "Listing file output level (0-3)" },
+	{ "listing-file", 'L', "<file.lst>", 0, "Name of the listing file" },
+	{ "output", 'o', "<file.nes>", 0, "Name of the output file" },
+	{ 0 }
+};
+
+/* Parse a single option. */
+static error_t
+parse_opt (int key, char *arg, struct argp_state *state)
+{
+	switch (key)
+	{
+		case 's':
+			dump_seg++;
+			if (dump_seg > 2) dump_seg = 2;
+			break;
+		case 'S':
+			dump_seg = 2;
+			break;
+		case 'm':
+			mlist_opt = 1;
+			break;
+		case 'r':
+			header_opt = 0;
+			break;
+		case 'o':
+  			strncpy(bin_fname, arg, sizeof(bin_fname));
+  			break;
+  		case 'L':
+  			strncpy(lst_fname, arg, sizeof(lst_fname));
+  			break;
+		case 'f':
+			sym_opt = 1;
+			if (arg) strncpy(sym_fname, arg, sizeof(sym_opt));
+			break;
+		case 'l':
+			list_level = atol(arg);
+			/* check range */
+			if (list_level < 0 || list_level > 3)
+				list_level = 2;
+			break;
+		case ARGP_KEY_ARG:
+			if (state->arg_num >= 1)
+				/* Too many arguments. */
+				argp_usage(state);
+			in_fname = arg;
+			break;      
+		case ARGP_KEY_END:
+			if (state->arg_num < 1)
+				/* Not enough arguments. */
+				argp_usage (state);
+			break;
+		default:
+			return ARGP_ERR_UNKNOWN;
+	}
+	return 0;
+}
+
+/* Our argp parser. */
+static struct argp argp = { options, parse_opt, argp_program_args_desc, NULL };
 
 /* ----
  * main()
@@ -71,12 +139,13 @@ int   asm_opt[8];	/* assembler options */
 int
 main(int argc, char **argv)
 {
-	FILE *fp, *ipl;
+	FILE *fp;
 	char *p;
-	char  cmd[80];
 	int i, j;
-	int file;
 	int ram_bank;
+
+	if (argc == 1)
+		fprintf(stderr, "%s\n", program_desc);
 
 	/* get program name */
 	if ((prg_name = strrchr(argv[0], '/')) != NULL)
@@ -92,124 +161,26 @@ main(int argc, char **argv)
 	if ((p = strrchr(prg_name, '.')) != NULL)
 		*p = '\0';
 
-	/* machine detection */
-	if (!strncasecmp(prg_name, "PCE", 3))
-		machine = &pce;
-	else
-		machine = &nes;
-
 	/* init assembler options */
+	machine = &nes;
 	list_level = 2;
 	header_opt = 1;
-	develo_opt = 0;
 	mlist_opt = 0;
-	srec_opt = 0;
-	run_opt = 0;
-	scd_opt = 0;
-	cd_opt = 0;
-	mx_opt = 0;
 	sym_opt = 0;
-	file = 0;
 	zero_fill = 0;
 	out_stdout = 0;
 
+	bin_fname[0] = 0;
+	lst_fname[0] = 0;
+	sym_fname[0] = 0;
+
 	/* parse command line */
-	if (argc > 1) {
-		for (i = 1; i < argc; i++) {
-			if (argv[i][0] == '-') {
-				/* segment usage */
-				if (!strcmp(argv[i], "-s"))
-					dump_seg = 1;
-				else if (!strcmp(argv[i], "-S"))
-					dump_seg = 2;
-
-				/* zero fill
-				 * (this makes the segment dump information
-				 * inaccurate)
-				 */
-				if (!strcmp(argv[i],"-z")) {
-					zero_fill = 1;
-					dump_seg  = 0;
-				}
-
-				/* output to stdout */
-				else if (!strcmp(argv[i],"-O")) out_stdout = 1;
-
-				/* forces macros expansion */
-				else if (!strcmp(argv[i], "-m"))
-					mlist_opt = 1;
-
-				/* no header */
-				else if (!strcmp(argv[i], "-raw"))
-					header_opt = 0;
-
-				/* output s-record file */
-				else if (!strcmp(argv[i], "-srec"))
-					srec_opt = 1;
-
-				/* output FCEUX symbols file */
-				else if (!strcmp(argv[i], "-sym"))
-					sym_opt = 1;
-
-				/* output level */
-				else if (!strncmp(argv[i], "-l", 2)) {
-					/* get level */
-					if (strlen(argv[i]) == 2)
-						list_level = atol(argv[++i]);
-					else
-						list_level = atol(&argv[i][2]);
-
-					/* check range */
-					if (list_level < 0 || list_level > 3)
-						list_level = 2;
-				}
-
-				/* help */
-				else if (!strcmp(argv[i], "-?")) {
-					help();
-					return (0);
-				}
-
-				else {
-					/* PCE specific functions */
-					if (machine->type == MACHINE_PCE) {
-						/* cd-rom */
-						if (!strcmp(argv[i], "-cd")) {
-							cd_opt  = STANDARD_CD;
-							scd_opt = 0;
-						}
-
-						/* super cd-rom */
-						else if (!strcmp(argv[i], "-scd")) {
-							scd_opt = SUPER_CD;
-							cd_opt  = 0;
-						}
-
-						/* develo auto-run */
-						else if (!strcmp(argv[i], "-develo"))
-							develo_opt = 1;
-						else if (!strcmp(argv[i], "-dev"))
-							develo_opt = 1;
-		
-						/* output mx file */
-						else if (!strcmp(argv[i], "-mx"))
-							mx_opt = 1;
-				 	}
-				}
-			}
-			else {
-				strcpy(in_fname, argv[i]);
-				file++;
-			}
-		}
-	}
-	if (!file) {
-		help();
-		return (0);
-	}
+	argp_parse(&argp, argc, argv, 0, 0, 0);
 
 	/* search file extension */
-	if ((p = strrchr(in_fname, '.')) != NULL) {
+	char basename[strlen(in_fname)+1];
+	strcpy(basename, in_fname);
+	if ((p = strrchr(basename, '.')) != NULL) {
 		if (!strchr(p, PATH_SEPARATOR))
 		   *p = '\0';
 		else
@@ -217,21 +188,21 @@ main(int argc, char **argv)
 	}
 
 	/* auto-add file extensions */
-	strcpy(out_fname, in_fname);
-	strcpy(bin_fname, in_fname);
-	strcpy(lst_fname, in_fname);
-	strcpy(sym_fname, in_fname);
-	strcat(bin_fname, (cd_opt || scd_opt) ? ".bin" : machine->rom_ext);
-	strcat(lst_fname, ".lst");
-	strcat(sym_fname, machine->rom_ext);
-
-	if (p)
-	   *p = '.';
-	else
-		strcat(in_fname, ".asm");
-
-	/* display assembler version message */
-	if (!out_stdout) printf("%s\n\n", machine->asm_title);
+	if (!bin_fname[0])
+	{
+		strcpy(bin_fname, in_fname);
+		strcat(bin_fname, machine->rom_ext);
+	}
+	if (!lst_fname[0])
+	{
+		strcpy(lst_fname, in_fname);
+		strcat(lst_fname, ".lst");
+	}
+	if (!sym_fname[0])
+	{
+		strcpy(sym_fname, in_fname);
+		strcat(sym_fname, machine->rom_ext);
+	}
 
 	/* init include path */
 	init_path();
@@ -266,9 +237,6 @@ main(int argc, char **argv)
 	addinst(machine->pseudo_inst);
 
 	/* predefined symbols */
-	lablset("MAGICKIT", 1);
-	lablset("DEVELO", develo_opt | mx_opt);
-	lablset("CDROM", cd_opt | scd_opt);
 	lablset("_bss_end", 0);
 	lablset("_bank_base", 0);
 	lablset("_nb_bank", 1);
@@ -282,19 +250,6 @@ main(int argc, char **argv)
 	bank_limit = 0x7F;
 	bank_base = 0;
 	errcnt = 0;
-
-	if (cd_opt) {
-		rom_limit  = 0x10000;	/* 64KB */
-		bank_limit = 0x07;
-	}
-	else if (scd_opt) {
-		rom_limit  = 0x40000;	/* 256KB */
-		bank_limit = 0x1F;
-	}
-	else if (develo_opt || mx_opt) {
-		rom_limit  = 0x30000;	/* 192KB */
-		bank_limit = 0x17;
-	}
 
 	/* assemble */
 	for (pass = FIRST_PASS; pass <= LAST_PASS; pass++) {
@@ -350,9 +305,6 @@ main(int argc, char **argv)
 		bank_page[S_DATA][0x00]      = 0x07;
 		bank_loccnt[S_DATA][0x00]    = 0x0000;
 
-		/* pass message */
-		if (!out_stdout) printf("pass %i\n", pass + 1);
-
 		/* assemble */
 		while (readline() != -1) {
 			assemble();
@@ -375,7 +327,7 @@ main(int argc, char **argv)
 		if (pass == FIRST_PASS)
 			proc_reloc();
 
-		/* abord pass on errors */
+		/* abort pass on errors */
 		if (errcnt) {
 			printf("# %d error(s)\n", errcnt);
 			break;
@@ -383,19 +335,13 @@ main(int argc, char **argv)
 
 		/* adjust bank base */
 		if (pass == FIRST_PASS)
-			bank_base = calc_bank_base();
+			bank_base = 0;
 
 		/* update predefined symbols */
 		if (pass == FIRST_PASS) {
 			lablset("_bss_end", machine->ram_base + max_bss);
 			lablset("_bank_base", bank_base);
 			lablset("_nb_bank", max_bank + 1);
-		}
-
-		/* adjust the symbol table for the develo or for cd-roms */
-		if (pass == FIRST_PASS) {
-			if (develo_opt || mx_opt || cd_opt || scd_opt)
-				lablremap();
 		}
 
 		/* rewind input file */
@@ -415,98 +361,21 @@ main(int argc, char **argv)
 
 	/* rom */
 	if (errcnt == 0) {
-		/* cd-rom */
-		if (cd_opt || scd_opt) {
-			/* open output file */
-			if ((fp = fopen(bin_fname, "wb")) == NULL) {
-				printf("Can not open output file '%s'!\n", bin_fname);
-				exit(1);
-			}
-		
-			/* boot code */
-			if (header_opt) {
-				/* open ipl binary file */
-				if ((ipl = open_file("boot.bin", "rb")) == NULL) {
-					printf("Can not find CD boot file 'boot.bin'!\n");
-					exit(1);
-				}
-
-				/* load ipl */
-				fread(ipl_buffer, 1, 4096, ipl);
-				fclose(ipl);
-
-				memset(&ipl_buffer[0x800], 0, 32);
-				/* prg sector base */
-				ipl_buffer[0x802] = 2;
-				/* nb sectors */
-				ipl_buffer[0x803] = 4;
-				/* loading address */
-				ipl_buffer[0x804] = 0x00;
-				ipl_buffer[0x805] = 0x40;
-				/* starting address */
-				ipl_buffer[0x806] = 0x10;
-				ipl_buffer[0x807] = 0x40;
-				/* mpr registers */
-				ipl_buffer[0x808] = 0x00;
-				ipl_buffer[0x809] = 0x01;
-				ipl_buffer[0x80A] = 0x02;
-				ipl_buffer[0x80B] = 0x03;
-				ipl_buffer[0x80C] = 0x04;
-				/* load mode */
-				ipl_buffer[0x80D] = 0x60;
-
-				/* write boot code */
-				fwrite(ipl_buffer, 1, 4096, fp);
-			}
-		
-			/* write rom */
-			fwrite(rom, 8192, (max_bank + 1), fp);
-			fclose(fp);
-		}
-
-		/* develo box */
-		else if (develo_opt || mx_opt) {
-			page = (map[0][0] >> 5);
-
-			/* save mx file */
-			if ((page + max_bank) < 7)
-				/* old format */
-				write_srec(out_fname, "mx", page << 13);
-			else
-				/* new format */
-				write_srec(out_fname, "mx", 0xD0000);
-
-			/* execute */
-			if (develo_opt) {
-				sprintf(cmd, "perun %s", out_fname);
-				system(cmd);
-			}
-		}
-
 		/* save */
-		else {
-			/* s-record file */
-			if (srec_opt)
-				write_srec(out_fname, "s28", 0);
-
-			/* binary file */
-			else {
-				/* open file */
-				if (out_stdout) fp = stdout;
-				else if ((fp = fopen(bin_fname, "wb")) == NULL) {
-					printf("Can not open binary file '%s'!\n", bin_fname);
-					exit(1);
-				}
-		
-				/* write header */
-				if (header_opt)
-					machine->write_header(fp, max_bank + 1);
-		
-				/* write rom */
-				fwrite(rom, 8192, (max_bank + 1), fp);
-				fclose(fp);
-			}
+		/* open file */
+		if (out_stdout) fp = stdout;
+		else if ((fp = fopen(bin_fname, "wb")) == NULL) {
+			printf("Can not open binary file '%s'!\n", bin_fname);
+			exit(1);
 		}
+	
+		/* write header */
+		if (header_opt)
+			machine->write_header(fp, max_bank + 1);
+		
+		/* write rom */
+		fwrite(rom, 8192, (max_bank + 1), fp);
+		fclose(fp);
 	}
 
 	/* close listing file */
@@ -528,42 +397,6 @@ main(int argc, char **argv)
 
 	/* ok */
 	return(0);
-}
-
-
-/* ----
- * calc_bank_base()
- * ----
- * calculate rom bank base
- */
-
-int
-calc_bank_base(void)
-{
-	int base;
-
-	/* cd */
-	if (cd_opt)
-		base = 0x80;
-	
-	/* super cd */
-	else if (scd_opt)
-		base = 0x68;
-
-	/* develo */
-	else if (develo_opt || mx_opt) {
-		if (max_bank < 4)
-			base = 0x84;
-		else
-			base = 0x68;
-	}
-
-	/* default */
-	else {
-		base = 0;
-	}
-
-	return (base);
 }
 
 
