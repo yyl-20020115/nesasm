@@ -36,11 +36,13 @@ Here's a description of the different options:
     ------             -----------
 
      -o <file.nes>     Set output filename.
+                       The default is input filename + ".nes" extension.
 
      -f [prefix]       Enable generation of symbol files for FCEUX debugger,
                        optionally you can specify filenames prefix.
 
      -L <file.lst>     Set listing filename.
+                       The default is input filename + ".lst" extension.
 
      -l #              Control output of the listing file:
 
@@ -54,6 +56,7 @@ Here's a description of the different options:
                                listing file
 
                        The default level is level 2.
+                       
      -s                Show segment usage. If one of those options is specified
                        the assembler will display information on the ROM bank
                        usage. Use '-s' to show basic information and '-ss' to
