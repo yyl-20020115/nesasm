@@ -2,6 +2,9 @@ RM       = rm -f
 CC       = gcc
 
 CFLAGS   = -O2 -Wall
+ifeq ($(OS),Windows_NT)
+  LDFLAGS += -largp
+endif
 
 OBJS     = main.o input.o assemble.o expr.o code.o command.o\
          macro.o func.o proc.o symbol.o output.o crc.o\
@@ -38,4 +41,4 @@ nes.o    : nes.h
 #
 
 $(TARGNES) : $(OBJS)
-	$(CC) -o $(TARGNES)  $(OBJS)
+	$(CC) -o $(TARGNES) $(OBJS) $(LDFLAGS)

@@ -96,7 +96,7 @@ FILE* stlist_file(FILE *fp, char * basename, int n)
 		strcat(fname, ".ram.nl");
 	else {
 		char ext[16];
-		sprintf(ext, ".%d.nl", n);
+		sprintf(ext, ".%X.nl", n);
 		strcat(fname, ext);
 	}
 	if ((fp = fopen(fname, "w")) == NULL) {
@@ -106,7 +106,7 @@ FILE* stlist_file(FILE *fp, char * basename, int n)
 	return fp;
 }
 
-void stlist(char *file)
+void stlist(char *file, int bank_offset)
 {
 	struct t_symbol *sym;
 	struct t_symbol *local;
@@ -127,14 +127,14 @@ void stlist(char *file)
 
 			bank = sym->value < 0x8000 ? -1 : sym-> bank/2;
 			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*)-1);	
-			files[fnum] = stlist_file(files[fnum], file, bank);
+			files[fnum] = stlist_file(files[fnum], file, bank+bank_offset);
 			fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
 			local = sym->local;
 			while (local)
 			{
 				bank = sym->value < 0x8000 ? -1 : sym-> bank/2;
 				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*)-1);	
-				files[fnum] = stlist_file(files[fnum], file, bank);
+				files[fnum] = stlist_file(files[fnum], file, bank+bank_offset);
 				fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
 	       			local = local->next;
 			}

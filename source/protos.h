@@ -114,4 +114,4 @@ struct t_symbol *stinstall(int hash, int type);
 int  labldef(int lval, int flag);
 void lablset(char *name, int val);
 void lablremap(void);
-void stlist(char *file);
+void stlist(char *file, int bank_offset);

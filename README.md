@@ -41,6 +41,8 @@ Here's a description of the different options:
      -f [prefix]       Enable generation of symbol files for FCEUX debugger,
                        optionally you can specify filenames prefix.
 
+     -F [offset]       Set bank offset for FCEUX symbol files.
+
      -L <file.lst>     Set listing filename.
                        The default is output filename + ".lst" extension.
 

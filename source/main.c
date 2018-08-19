@@ -51,6 +51,7 @@ int   zero_fill;
 int   out_stdout;
 int   header_opt;
 int   sym_opt; /* export symbols for FCEUX flag */
+char  sym_bank_offset_opt;  /* bank offset for FCEUX symbol files */
 int   mlist_opt;	/* macro listing main flag */
 int   xlist;		/* listing file main flag */
 int   list_level;	/* output level */
@@ -71,6 +72,7 @@ static struct argp_option options[] = {
 	{ "macro-expansion", 'm', 0, 0, "Force macro expansion in listing" },
 	{ "raw", 'r', 0, 0, "Prevent adding a ROM header" },
 	{ "symbols", 'f', "PREFIX", OPTION_ARG_OPTIONAL, "Create FCEUX symbol files" },
+	{ "symbols-offset", 'F', "OFFSET", 0, "Bank offset for FCEUX symbol files" },
 	{ "listing-level", 'l', "#", 0, "Listing file output level (0-3)" },
 	{ "listing-file", 'L', "<file.lst>", 0, "Name of the listing file" },
 	{ "output", 'o', "<file.nes>", 0, "Name of the output file" },
@@ -104,7 +106,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
   			break;
 		case 'f':
 			sym_opt = 1;
-			if (arg) strncpy(sym_fname, arg, sizeof(sym_opt));
+			if (arg) strncpy(sym_fname, arg, sizeof(sym_fname));
+			break;
+		case 'F':
+			sym_bank_offset_opt = atol(arg);
 			break;
 		case 'l':
 			list_level = atol(arg);
@@ -154,6 +159,7 @@ main(int argc, char **argv)
 	header_opt = 1;
 	mlist_opt = 0;
 	sym_opt = 0;
+	sym_bank_offset_opt = 0;
 	zero_fill = 0;
 	out_stdout = 0;
 
@@ -306,7 +312,7 @@ main(int argc, char **argv)
 				if (proc_ptr == NULL)
 					fatal_error("Bank overflow, offset > $1FFF!");
 				else {
-					char tmp[128];
+					char tmp[256];
 
 					sprintf(tmp, "Proc : '%s' is too large (code > 8KB)!", proc_ptr->name);
 					fatal_error(tmp);
@@ -387,7 +393,7 @@ main(int argc, char **argv)
 		show_seg_usage();
 
 	if (sym_opt)
-		stlist(sym_fname);
+		stlist(sym_fname, sym_bank_offset_opt);
 
 	/* ok */
 	return(0);
