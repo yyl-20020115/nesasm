@@ -42,7 +42,7 @@ Here's a description of the different options:
                        optionally you can specify filenames prefix.
 
      -L <file.lst>     Set listing filename.
-                       The default is input filename + ".lst" extension.
+                       The default is output filename + ".lst" extension.
 
      -l #              Control output of the listing file:
 

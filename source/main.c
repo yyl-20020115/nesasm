@@ -43,7 +43,6 @@ char   *in_fname;	/* file names, input */
 char  bin_fname[256];	/* binary */
 char  lst_fname[256];	/* listing */
 char  sym_fname[256];	/* symbols */
-char *prg_name;	/* program name */
 FILE *in_fp;	/* file pointers, input */
 FILE *lst_fp;	/* listing */
 char  section_name[4][8] = { "  ZP", " BSS", "CODE", "DATA" };
@@ -149,20 +148,6 @@ main(int argc, char **argv)
 	if (argc == 1)
 		fprintf(stderr, "%s\n", program_desc);
 
-	/* get program name */
-	if ((prg_name = strrchr(argv[0], '/')) != NULL)
-		 prg_name++;
-	else {
-		if ((prg_name = strrchr(argv[0], '\\')) == NULL)
-			 prg_name = argv[0];
-		else
-			 prg_name++;
-	}	
-
-	/* remove extension */
-	if ((p = strrchr(prg_name, '.')) != NULL)
-		*p = '\0';
-
 	/* init assembler options */
 	machine = &nes;
 	list_level = 2;
@@ -184,7 +169,7 @@ main(int argc, char **argv)
 	strcpy(basename, in_fname);
 	if ((p = strrchr(basename, '.')) != NULL) {
 		if (!strchr(p, PATH_SEPARATOR))
-		   *p = '\0';
+			*p = '\0';
 		else
 			p = NULL;
 	}
@@ -192,18 +177,25 @@ main(int argc, char **argv)
 	/* auto-add file extensions */
 	if (!bin_fname[0])
 	{
-		strcpy(bin_fname, in_fname);
+		strcpy(bin_fname, basename);
 		strcat(bin_fname, machine->rom_ext);
+	}
+	char bin_basename[strlen(bin_fname)+1];
+	strcpy(bin_basename, bin_fname);
+	if ((p = strrchr(bin_basename, '.')) != NULL) {
+		if (!strchr(p, PATH_SEPARATOR))
+			*p = '\0';
+		else
+			p = NULL;
 	}
 	if (!lst_fname[0])
 	{
-		strcpy(lst_fname, in_fname);
+		strcpy(lst_fname, bin_basename);
 		strcat(lst_fname, ".lst");
 	}
 	if (!sym_fname[0])
 	{
-		strcpy(sym_fname, in_fname);
-		strcat(sym_fname, machine->rom_ext);
+		strcpy(sym_fname, bin_fname);
 	}
 
 	/* init include path */
@@ -400,41 +392,6 @@ main(int argc, char **argv)
 	/* ok */
 	return(0);
 }
-
-
-/* ----
- * help()
- * ----
- * show assembler usage
- */
-
-void
-help(void)
-{
-	/* check program name */
-	if (strlen(prg_name) == 0)
-		prg_name = machine->asm_name;
-
-	/* display help */
-	printf("%s [-options] [-? (for help)] infile\n\n", prg_name);
-	printf("-O     : write output to stdout (for binary files only)\n");
-	printf("-s/S   : show segment usage\n");
-	printf("-l #   : listing file output level (0-3)\n");
-	printf("-m     : force macro expansion in listing\n");
-	printf("-raw   : prevent adding a ROM header\n");
-	if (machine->type == MACHINE_PCE) {
-		printf("-cd    : create a CD-ROM binary image\n");
-		printf("-scd   : create a Super CD-ROM binary image\n");
-		printf("-dev   : assemble and run on the Develo Box\n");
-		printf("-mx    : create a Develo MX file\n");
-	}
-	printf("-srec  : create a Motorola S-record file\n");
-	printf("-sym   : create a FCEUX debugger symbols file\n");
-	printf("-z     : fill unused space in ROM with zeroes\n");
-	printf("         NOTE: Makes segment usage information inaccurate\n");
-	printf("infile : file to be assembled\n");
-}
-
 
 /* ----
  * show_seg_usage()
