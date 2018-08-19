@@ -14,16 +14,17 @@ Just another modification of nesasm. Based on modification by Tim Hentenaar whic
 
     Usage: nesasm [OPTION...] <source.asm>
 
-      -f, --symbols[=PREFIX]     Create FCEUX symbol files
+      -f, --symbols[=<prefix>]   Create FCEUX symbol files
+      -F, --symbols-offset=<offset>   Bank offset for FCEUX symbol files
       -l, --listing-level=#      Listing file output level (0-3)
       -L, --listing-file=<file.lst>   Name of the listing file
       -m, --macro-expansion      Force macro expansion in listing
       -o, --output=<file.nes>    Name of the output file
       -r, --raw                  Prevent adding a ROM header
       -s, --segment-usage        Show (more) segment usage
-      -?, --help                 Give this help list
-          --usage                Give a short usage message
-      -V, --version              Print program version
+      -?, --help                 give this help list
+          --usage                give a short usage message
+      -V, --version              print program version
 
 The assembler accepts only one input file 'infile' that will be assembled  into ROM file (.NES extension) directly useable  by an emulator.
 
