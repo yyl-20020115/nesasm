@@ -37,14 +37,10 @@ Here's a description of the different options:
 
      -o <file.nes>     Set output filename.
 
-     -L <file.lst>     Set list filename.
+     -f [prefix]       Enable generation of symbol files for FCEUX debugger,
+                       optionally you can specify filenames prefix.
 
-     -f [prefix]       Enable generation of symbol files for FCEUX debugger
-
-     -s                Show segment usage. If one of those options is specified
-                       the assembler will display information on the ROM bank
-                       usage. Use '-s' to show basic information and '-ss' to
-                       show more detailed information.
+     -L <file.lst>     Set listing filename.
 
      -l #              Control output of the listing file:
 
@@ -58,6 +54,10 @@ Here's a description of the different options:
                                listing file
 
                        The default level is level 2.
+     -s                Show segment usage. If one of those options is specified
+                       the assembler will display information on the ROM bank
+                       usage. Use '-s' to show basic information and '-ss' to
+                       show more detailed information.
 
      -m                Force macros expansion in the listing file, even if the
                        MLIST directive is not seen in the input file.
