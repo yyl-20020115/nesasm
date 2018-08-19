@@ -1,6 +1,41 @@
-default:
-	make -f Makefile.unix
+RM       = rm -f
+CC       = gcc
+
+CFLAGS   = -O2 -Wall
+
+OBJS     = main.o input.o assemble.o expr.o code.o command.o\
+         macro.o func.o proc.o symbol.o output.o crc.o\
+         mml.o nes.o
+
+EXEDIR   = ..
+
+TARGNES  = $(EXEDIR)/nesasm
+
+#
+#
+
+all: $(TARGNES)
+default: $(TARGNES)
+
+# CLEAN
+#
 
 clean:
-	make -f Makefile.unix clean
+	$(RM) *.o
+	$(RM) $(EXEDIR)/nesasm
 
+# ASSEMBLER
+#
+
+$(OBJS)  : defs.h externs.h protos.h
+main.o   : inst.h vars.h
+expr.o   : expr.h
+nes.o    : nes.h
+%.o : %.c
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+# EXE
+#
+
+$(TARGNES) : $(OBJS)
+	$(CC) -o $(TARGNES)  $(OBJS)
