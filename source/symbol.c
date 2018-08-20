@@ -135,7 +135,7 @@ void stlist(char *file, int bank_offset)
 				bank = local->value < 0x8000 ? -1 : local->bank/2 + bank_offset;
 				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 				files[fnum] = stlist_file(files[fnum], file, bank);
-				fprintf(files[fnum], "$%04X#%s#\n", local->value, local->name+1);
+				fprintf(files[fnum], "$%04X#%s (%s)#\n", local->value, local->name+1, sym->name+1);
 	       			local = local->next;
 			}
 		} while ((sym = sym->next) != NULL);
