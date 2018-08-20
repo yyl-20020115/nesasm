@@ -151,11 +151,6 @@ assemble(void)
 		j++;
 	}
 
-	/* This hack fixes an issue where nesasm chokes on
-	 * directives without preceeding whitespace
-	 * - Tim
-	 */
-	if (i == SFIELD && prlnbuf[i] == '.') i++;
 	if ((j == 0) || ((i != SFIELD) && (c != ':')))
 		i = SFIELD;
 	else {
