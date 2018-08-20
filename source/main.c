@@ -52,7 +52,9 @@ int   out_stdout;
 int   header_opt;
 int   sym_opt; /* export symbols for FCEUX flag */
 char  sym_bank_offset_opt;  /* bank offset for FCEUX symbol files */
+int   list_opt;		/* listing main flag */
 int   mlist_opt;	/* macro listing main flag */
+int   warnings_opt;	/* warnings main flag */
 int   xlist;		/* listing file main flag */
 int   list_level;	/* output level */
 int   asm_opt[8];	/* assembler options */
@@ -69,12 +71,14 @@ static char argp_program_args_desc[] = "<source.asm>";
 static struct argp_option options[] = {
 	{ "segment-usage", 's', 0, 0, "Show (more) segment usage" },
 	{ 0, 'S', 0, OPTION_HIDDEN, "" },
+	{ "listing", 'i', 0, 0, "Force listing" },
 	{ "macro-expansion", 'm', 0, 0, "Force macro expansion in listing" },
 	{ "raw", 'r', 0, 0, "Prevent adding a ROM header" },
 	{ "symbols", 'f', "<prefix>", OPTION_ARG_OPTIONAL, "Create FCEUX symbol files" },
 	{ "symbols-offset", 'F', "<offset>", 0, "Bank offset for FCEUX symbol files" },
 	{ "listing-level", 'l', "#", 0, "Listing file output level (0-3)" },
 	{ "listing-file", 'L', "<file.lst>", 0, "Name of the listing file" },
+	{ "warnings", 'W', 0, 0, "Show overflow warnings" },
 	{ "output", 'o', "<file.nes>", 0, "Name of the output file" },
 	{ 0 }
 };
@@ -92,8 +96,14 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		case 'S':
 			dump_seg = 2;
 			break;
+		case 'i':
+			list_opt = 1;
+			break;
 		case 'm':
 			mlist_opt = 1;
+			break;
+		case 'W':
+			warnings_opt = 1;
 			break;
 		case 'r':
 			header_opt = 0;
@@ -157,7 +167,9 @@ main(int argc, char **argv)
 	machine = &nes;
 	list_level = 2;
 	header_opt = 1;
+	list_opt = 0;
 	mlist_opt = 0;
+	warnings_opt = 0;
 	sym_opt = 0;
 	sym_bank_offset_opt = 0;
 	zero_fill = 0;
@@ -260,16 +272,16 @@ main(int argc, char **argv)
 		slnum = 0;
 		mcounter = 0;
 		mcntmax = 0;
-		xlist = 0;
+		xlist = list_opt;
 		glablptr = NULL;
 		skip_lines = 0;
 		rsbase = 0;
 		proc_nb = 0;
 
 		/* reset assembler options */
-		asm_opt[OPT_LIST] = 0;
+		asm_opt[OPT_LIST] = list_opt;
 		asm_opt[OPT_MACRO] = mlist_opt;
-		asm_opt[OPT_WARNING] = 0;
+		asm_opt[OPT_WARNING] = warnings_opt;
 		asm_opt[OPT_OPTIMIZE] = 0;
 
 		/* reset bank arrays */
