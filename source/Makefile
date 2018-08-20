@@ -12,7 +12,11 @@ OBJS     = main.o input.o assemble.o expr.o code.o command.o\
 
 EXEDIR   = ..
 
-TARGNES  = $(EXEDIR)/nesasm
+ifeq ($(OS),Windows_NT)
+  TARGNES  = $(EXEDIR)/nesasm.exe
+else
+  TARGNES  = $(EXEDIR)/nesasm
+endif
 
 #
 #
@@ -25,7 +29,7 @@ default: $(TARGNES)
 
 clean:
 	$(RM) *.o
-	$(RM) $(EXEDIR)/nesasm
+	$(RM) $(TARGNES)
 
 # ASSEMBLER
 #
