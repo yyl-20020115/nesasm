@@ -125,17 +125,17 @@ void stlist(char *file, int bank_offset)
 			if (strcmp(sym->name+1, "_nb_bank") == 0) continue;
 			if (strcmp(sym->name+1, "_call_bank") == 0) continue;
 
-			bank = sym->value < 0x8000 ? -1 : sym-> bank/2;
-			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*)-1);	
-			files[fnum] = stlist_file(files[fnum], file, bank+bank_offset);
+			bank = sym->value < 0x8000 ? -1 : sym->bank/2 + bank_offset;
+			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
+			files[fnum] = stlist_file(files[fnum], file, bank);
 			fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
 			local = sym->local;
 			while (local)
 			{
-				bank = sym->value < 0x8000 ? -1 : sym-> bank/2;
-				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*)-1);	
-				files[fnum] = stlist_file(files[fnum], file, bank+bank_offset);
-				fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
+				bank = local->value < 0x8000 ? -1 : local->bank/2 + bank_offset;
+				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
+				files[fnum] = stlist_file(files[fnum], file, bank);
+				fprintf(files[fnum], "$%04X#%s#\n", local->value, local->name+1);
 	       			local = local->next;
 			}
 		} while ((sym = sym->next) != NULL);
