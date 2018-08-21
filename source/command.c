@@ -861,6 +861,9 @@ do_rs(int *ip)
 		println();
 	}
 
+	/* Size of variable */
+	lablptr->data_size = value;
+
 	/* update 'rs' base */
 	rsbase += value;
 	if (rsbase & 0xFFFF0000)

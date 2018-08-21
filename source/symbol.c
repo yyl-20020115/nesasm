@@ -112,7 +112,7 @@ void stlist(char *file, int bank_offset)
 	struct t_symbol *local;
 	FILE *files[256];
 	memset(files, 0, sizeof(files)); 
-	int i, bank, fnum;
+	int i, j, bank, fnum;
 	for (i = 0; i < sizeof(hash_tbl) / sizeof(hash_tbl[0]); i++)
 	{
 		sym = hash_tbl[i];
@@ -129,6 +129,8 @@ void stlist(char *file, int bank_offset)
 			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 			files[fnum] = stlist_file(files[fnum], file, bank);
 			fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
+			for (j = 1; j < sym->data_size; j++)
+				fprintf(files[fnum], "$%04X#%s+%d#\n", sym->value+j, sym->name+1, j);
 			local = sym->local;
 			while (local)
 			{
@@ -136,6 +138,8 @@ void stlist(char *file, int bank_offset)
 				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 				files[fnum] = stlist_file(files[fnum], file, bank);
 				fprintf(files[fnum], "$%04X#%s (%s)#\n", local->value, local->name+1, sym->name+1);
+				for (j = 1; j < sym->data_size; j++)
+					fprintf(files[fnum], "$%04X#%s+%d (%s)#\n", local->value+j, local->name+1, j, sym->name+1);
 	       			local = local->next;
 			}
 		} while ((sym = sym->next) != NULL);
