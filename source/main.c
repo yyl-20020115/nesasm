@@ -24,6 +24,10 @@
  *    Alexey Avdyukhin
  *
  */
+ 
+#define VERSION "v3.0"
+#define DESCRIPTION "a 6502 assembler with specific NES support"
+#define GITHUB_URL "https://github.com/ClusterM/nesasm/"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +40,7 @@
 #include "protos.h"
 #include "vars.h"
 #include "inst.h"
+#include "commit.h"
 
 /* variables */
 unsigned char ipl_buffer[4096];
@@ -60,9 +65,9 @@ int   list_level;	/* output level */
 int   asm_opt[8];	/* assembler options */
 
 /* Program description. */
-static char program_desc[] = "nesasm CE v3.0 - a 6502 assembler with specific NES support";
+static char program_desc[256];
 const char *argp_program_version = program_desc;
-const char *argp_program_bug_address = "https://github.com/ClusterM/nesasm/";
+const char *argp_program_bug_address = GITHUB_URL;
 
 /* Program arguments description. */
 static char argp_program_args_desc[] = "<source.asm>";
@@ -159,6 +164,9 @@ main(int argc, char **argv)
 	char *p;
 	int i, j;
 	int ram_bank;
+	
+	sprintf(program_desc, "nesasm %s - %s\ncommit: %s @ %s",
+		VERSION, DESCRIPTION, COMMIT, GITHUB_URL);
 
 	if (argc == 1)
 		fprintf(stderr, "%s\n", program_desc);
