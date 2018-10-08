@@ -78,8 +78,6 @@ colsym(int *ip)
 	/* error */
 	if (err) {
 		fatal_error("Reserved symbol!");
-//		symbol[0] = 0;
-//		symbol[1] = '\0';
 		return (0);
 	}	
 
@@ -119,29 +117,24 @@ void stlist(char *file, int bank_offset)
 		if (!sym) continue;
 		do
 		{
-			/* predefined symbols */
-			if (strcmp(sym->name+1, "_bss_end") == 0) continue;
-			if (strcmp(sym->name+1, "_bank_base") == 0) continue;
-			if (strcmp(sym->name+1, "_nb_bank") == 0) continue;
-			if (strcmp(sym->name+1, "_call_bank") == 0) continue;
+			/* skipping reserved symbols and constants */
+			if (sym->reserved || sym->equ) continue;
 
 			bank = sym->value < 0x8000 ? -1 : sym->bank/2 + bank_offset;
 			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 			files[fnum] = stlist_file(files[fnum], file, bank);
-			if (sym->data_size > 0)
-				fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
+			fprintf(files[fnum], "$%04X#%s# %d %d\n", sym->value, sym->name+1, sym->reserved, sym->equ);
 			for (j = 1; j < sym->data_size; j++)
-				fprintf(files[fnum], "$%04X#%s+%d#\n", sym->value+j, sym->name+1, j);
+				fprintf(files[fnum], "$%04X#%s+%d# %d %d\n", sym->value+j, sym->name+1, j, sym->reserved, sym->equ);
 			local = sym->local;
 			while (local)
 			{
 				bank = local->value < 0x8000 ? -1 : local->bank/2 + bank_offset;
 				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 				files[fnum] = stlist_file(files[fnum], file, bank);
-				if (local->data_size > 0)
-					fprintf(files[fnum], "$%04X#%s (%s)#\n", local->value, local->name+1, sym->name+1);
+				fprintf(files[fnum], "$%04X#%s (%s)# %d %d\n", local->value, local->name+1, sym->name+1, local->reserved, local->equ);
 				for (j = 1; j < sym->data_size; j++)
-					fprintf(files[fnum], "$%04X#%s+%d (%s)#\n", local->value+j, local->name+1, j, sym->name+1);
+					fprintf(files[fnum], "$%04X#%s+%d (%s)# %d %d\n", local->value+j, local->name+1, j, sym->name+1, local->reserved, local->equ);
 	       			local = local->next;
 			}
 		} while ((sym = sym->next) != NULL);
@@ -251,6 +244,7 @@ struct t_symbol *stinstall(int hash, int type)
 	sym->pal   = -1;
 	sym->refcnt = 0;
 	sym->reserved = 0;
+	sym->equ = 0;
 	sym->data_type = -1;
 	sym->data_size = 0;
 	strcpy(sym->name, symbol);

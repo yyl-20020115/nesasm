@@ -349,6 +349,7 @@ do_equ(int *ip)
 		return;
 
 	/* assign value to the label */
+	lablptr->equ = 1;
 	labldef(value, 0);
 
 	/* output line */

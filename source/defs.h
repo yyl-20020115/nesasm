@@ -182,6 +182,7 @@ typedef struct t_symbol {
 	int  pal;
 	int  refcnt;
 	int  reserved;
+	int  equ;
 	int  data_type;
 	int  data_size;
 	char name[SBOLSZ];
