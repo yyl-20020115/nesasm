@@ -37,7 +37,7 @@ default: $(TARGNES)
 clean:
 	$(RM) *.o 
 ifeq ($(OS),Windows_NT)
-	@if [ -f "$(TARGNES)" ]; then for f in `cygcheck "$(TARGNES)" | grep .dll` ; do rm $(EXEDIR)/`basename "$$f"` ; done fi
+	@if [ -f "$(TARGNES)" ]; then for f in `cygcheck "$(TARGNES)" | grep .dll | grep msys` ; do rm -f $(EXEDIR)/`basename "$$f"` ; done fi
 endif
 	$(RM) $(TARGNES)
 	$(RM) $(COMMIT_INFO)
@@ -62,5 +62,5 @@ $(COMMIT_INFO):
 $(TARGNES) : $(OBJS)
 	$(CC) -o $(TARGNES) $(OBJS) $(LDFLAGS)
 ifeq ($(OS),Windows_NT)
-	@for f in `cygcheck "$(TARGNES)" | grep .dll` ; do cp -vf `cygpath "$$f"` $(EXEDIR)/ ; done
+	@for f in `cygcheck "$(TARGNES)" | grep .dll | grep msys` ; do cp -vf `cygpath "$$f"` $(EXEDIR)/ ; done
 endif
