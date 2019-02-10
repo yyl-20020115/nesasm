@@ -58,3 +58,7 @@ $(COMMIT_INFO):
 
 $(TARGNES) : $(OBJS)
 	$(CC) -o $(TARGNES) $(OBJS) $(LDFLAGS)
+ifeq ($(OS),Windows_NT)
+	@for f in `cygcheck $(TARGNES) | grep .dll` ; do cp -vf `cygpath "$$f"` $(EXEDIR)/ ; done
+endif
+
