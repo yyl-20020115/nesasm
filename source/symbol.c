@@ -123,18 +123,22 @@ void stlist(char *file, int bank_offset)
 			bank = sym->value < 0x8000 ? -1 : sym->bank/2 + bank_offset;
 			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 			files[fnum] = stlist_file(files[fnum], file, bank);
-			fprintf(files[fnum], "$%04X#%s# %d %d\n", sym->value, sym->name+1, sym->reserved, sym->equ);
+			//fprintf(files[fnum], "$%04X#%s# %d %d\n", sym->value, sym->name+1, sym->reserved, sym->equ);
+      fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
 			for (j = 1; j < sym->data_size; j++)
-				fprintf(files[fnum], "$%04X#%s+%d# %d %d\n", sym->value+j, sym->name+1, j, sym->reserved, sym->equ);
+				//fprintf(files[fnum], "$%04X#%s+%d# %d %d\n", sym->value+j, sym->name+1, j, sym->reserved, sym->equ);
+        fprintf(files[fnum], "$%04X#%s+%d#\n", sym->value+j, sym->name+1, j);
 			local = sym->local;
 			while (local)
 			{
 				bank = local->value < 0x8000 ? -1 : local->bank/2 + bank_offset;
 				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 				files[fnum] = stlist_file(files[fnum], file, bank);
-				fprintf(files[fnum], "$%04X#%s (%s)# %d %d\n", local->value, local->name+1, sym->name+1, local->reserved, local->equ);
+				//fprintf(files[fnum], "$%04X#%s (%s)# %d %d\n", local->value, local->name+1, sym->name+1, local->reserved, local->equ);
+        fprintf(files[fnum], "$%04X#%s (%s)#\n", local->value, local->name+1, sym->name+1);
 				for (j = 1; j < sym->data_size; j++)
-					fprintf(files[fnum], "$%04X#%s+%d (%s)# %d %d\n", local->value+j, local->name+1, j, sym->name+1, local->reserved, local->equ);
+					//fprintf(files[fnum], "$%04X#%s+%d (%s)# %d %d\n", local->value+j, local->name+1, j, sym->name+1, local->reserved, local->equ);
+          fprintf(files[fnum], "$%04X#%s+%d (%s)#\n", local->value+j, local->name+1, j, sym->name+1);
 	       			local = local->next;
 			}
 		} while ((sym = sym->next) != NULL);
