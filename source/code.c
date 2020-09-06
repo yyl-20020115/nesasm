@@ -117,11 +117,11 @@ class4(int *ip)
 	int	i;
 
 	/* skip spaces */
-	while (isspace(prlnbuf[*ip]))
+	while (isspace((int)prlnbuf[*ip]))
 		(*ip)++;
 
 	/* low/high byte prefix string */
-	if (isalpha(prlnbuf[*ip])) {
+	if (isalpha((int)prlnbuf[*ip])) {
 		len = 0;
 		i = *ip;
 
@@ -130,7 +130,7 @@ class4(int *ip)
 			c = prlnbuf[i];
 			if (c == '\0' || c == ' ' || c == '\t' || c == ';')
 				break;
-			if ((!isalpha(c) && c != '_') || (len == 31)) {
+			if ((!isalpha((int)c) && c != '_') || (len == 31)) {
 				len = 0;
 				break;
 			}
@@ -553,7 +553,7 @@ getoperand(int *ip, int flag, int last_char)
 	auto_tag = 0;
 
 	/* skip spaces */
-	while (isspace(prlnbuf[*ip]))
+	while (isspace((int)prlnbuf[*ip]))
 		(*ip)++;
 
 	/* check addressing mode */
@@ -568,7 +568,7 @@ getoperand(int *ip, int flag, int last_char)
 	case 'a':
 		/* accumulator */
 		c = prlnbuf[(*ip)+1];
-		if (isspace(c) || c == '\0' || c == ';' || c == ',') {
+		if (isspace((int)c) || c == '\0' || c == ';' || c == ',') {
 			mode = ACC;
 			(*ip)++;
 			break;
@@ -755,7 +755,7 @@ getoperand(int *ip, int flag, int last_char)
 	}
 
 	/* skip spaces */
-	while (isspace(prlnbuf[*ip]))
+	while (isspace((int)prlnbuf[*ip]))
 		(*ip)++;
 
 	/* get last char */
@@ -800,7 +800,7 @@ getstring(int *ip, char *buffer, int size)
 	int i;
 
 	/* skip spaces */
-	while (isspace(prlnbuf[*ip]))
+	while (isspace((int)prlnbuf[*ip]))
 		(*ip)++;
 
 	/* string must be enclosed */
@@ -826,7 +826,7 @@ getstring(int *ip, char *buffer, int size)
 	buffer[i] = '\0';
 
 	/* skip spaces */
-	while (isspace(prlnbuf[*ip]))
+	while (isspace((int)prlnbuf[*ip]))
 		(*ip)++;
 
 	/* ok */

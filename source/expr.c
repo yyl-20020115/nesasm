@@ -40,14 +40,14 @@ evaluate(int *ip, char last_char)
 
 	/* skip spaces */
 cont:
-	while (isspace(*expr))
+	while (isspace((int)*expr))
 		expr++;
 
 	/* search for a continuation char */
 	if (*expr == '\\') {
 		/* skip spaces */
 		i = 1;
-		while (isspace(expr[i]))
+		while (isspace((int)expr[i]))
 			i++;
 
 		/* check if end of line */

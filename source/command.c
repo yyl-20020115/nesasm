@@ -174,7 +174,7 @@ do_db(int *ip)
 	data_level  = 2;
 
 	/* skip spaces */
-	while (isspace(prlnbuf[++(*ip)]));
+	while (isspace((int)prlnbuf[++(*ip)]));
 
 	/* get bytes */
 	for (;;) {
@@ -1023,7 +1023,7 @@ do_opt(int *ip)
 
 	for (;;) {
 		/* skip spaces */
-		while (isspace(prlnbuf[*ip]))
+		while (isspace((int)prlnbuf[*ip]))
 			(*ip)++;
 
 		/* get char */

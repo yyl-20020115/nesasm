@@ -33,7 +33,7 @@ do_macro(int *ip)
 		}
 		if (lablptr == NULL) {
 			/* skip spaces */
-			while (isspace(prlnbuf[*ip]))
+			while (isspace((int)prlnbuf[*ip]))
 				(*ip)++;
 
 			/* search a label after the .macro */
@@ -153,7 +153,7 @@ macro_getargs(int ip)
 	/* extract args */
 	for (;;) {
 		/* skip spaces */
-		while (isspace(prlnbuf[ip]))
+		while (isspace((int)prlnbuf[ip]))
 			ip++;
 
 		c = prlnbuf[ip++];
@@ -193,7 +193,7 @@ macro_getargs(int ip)
 				ptr[i++] = t;
 
 			/* skip spaces */
-			while (isspace(prlnbuf[ip]))
+			while (isspace((int)prlnbuf[ip]))
 				ip++;
 
 			/* check end of arg */
@@ -221,7 +221,7 @@ macro_getargs(int ip)
 		case '\\':
 			/* skip spaces */
 			i = ip;
-			while (isspace(prlnbuf[i]))
+			while (isspace((int)prlnbuf[i]))
 				i++;
 
 			/* check */
@@ -371,7 +371,7 @@ macro_getargtype(char *arg)
 	int  i;
 
 	/* skip spaces */
-	while (isspace(*arg))
+	while (isspace((int)*arg))
 		arg++;
 
 	/* get type */

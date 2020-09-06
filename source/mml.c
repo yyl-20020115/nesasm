@@ -174,7 +174,7 @@ mml_parse(unsigned char *buffer, int bufsize, char *ptr)
 				tone--;
 				ptr++;
 			}
-			if (isdigit(*ptr))
+			if (isdigit((int)*ptr))
 				len = (mml_get_length(&ptr) << 8);
 			else {
 				len = (snd_length << 8);
@@ -223,7 +223,7 @@ mml_parse(unsigned char *buffer, int bufsize, char *ptr)
 		/* rest */
 		case 'R':
 			/* local length */
-			if (isdigit(*ptr))
+			if (isdigit((int)*ptr))
 				len = (mml_get_length(&ptr) << 8);
 			else {
 				len = (0x0400);
@@ -290,7 +290,7 @@ mml_get_value(char **ptr)
 	for (;;) {
 		c = **ptr;
 
-		if (!isdigit(c))
+		if (!isdigit((int)c))
 			break;
 		if (value > 65535)
 			return (-1);

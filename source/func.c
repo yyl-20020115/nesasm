@@ -123,7 +123,7 @@ func_extract(int ip)
 	int   end;
 
 	/* skip spaces */
-	while (isspace(prlnbuf[ip]))
+	while (isspace((int)prlnbuf[ip]))
 		ip++;
 
 	/* get function body */
@@ -187,7 +187,7 @@ func_getargs(void)
 	}
 
 	/* skip spaces */
-	while (isspace(*expr))
+	while (isspace((int)*expr))
 		expr++;
 
 	/* function args must be enclosed in parenthesis */
@@ -205,7 +205,7 @@ func_getargs(void)
 	/* get args one by one */
 	for (;;) {
 		/* skip spaces */
-		while (isspace(*expr))
+		while (isspace((int)*expr))
 			expr++;
 
 		c = *expr++;

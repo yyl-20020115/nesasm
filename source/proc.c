@@ -42,7 +42,7 @@ do_call(int *ip)
 	/* generate code */
 	if (pass == LAST_PASS) {
 		/* skip spaces */
-		while (isspace(prlnbuf[*ip]))
+		while (isspace((int)prlnbuf[*ip]))
 			(*ip)++;
 
 		/* extract name */
@@ -148,7 +148,7 @@ do_proc(int *ip)
 	}
 	else {
 		/* skip spaces */
-		while (isspace(prlnbuf[*ip]))
+		while (isspace((int)prlnbuf[*ip]))
 			(*ip)++;
 
 		/* extract name */

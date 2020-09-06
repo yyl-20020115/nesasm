@@ -42,7 +42,7 @@ assemble(void)
 		if (colsym(&i))
 			if (prlnbuf[i] == ':')
 				i++;
-		while (isspace(prlnbuf[i]))
+		while (isspace((int)prlnbuf[i]))
 			i++;
 		if (pass == LAST_PASS)
 			println();
@@ -85,7 +85,7 @@ assemble(void)
 	 */
 	if (in_if) {
 		i = SFIELD;
-		while (isspace(prlnbuf[i]))
+		while (isspace((int)prlnbuf[i]))
 			i++;
 		if (oplook(&i) >= 0) {
 			if (opflg == PSEUDO) {
@@ -140,7 +140,7 @@ assemble(void)
 	/* search for a label */
 	i = SFIELD;
 	j = 0;
-	while (isspace(prlnbuf[i]))
+	while (isspace((int)prlnbuf[i]))
 		i++;
 	for (;;) {
 		c = prlnbuf[i + j];
@@ -162,7 +162,7 @@ assemble(void)
 	}
 
 	/* skip spaces */
-	while (isspace(prlnbuf[i]))
+	while (isspace((int)prlnbuf[i]))
 		i++;
 
 	/* is it a macro? */
@@ -387,7 +387,7 @@ addinst(struct t_opcode *optbl)
 int
 check_eol(int *ip)
 {
-	while (isspace(prlnbuf[*ip]))
+	while (isspace((int)prlnbuf[*ip]))
 		(*ip)++;
 	if (prlnbuf[*ip] == ';' || prlnbuf[*ip] == '\0')
 		return (1);
@@ -455,7 +455,7 @@ do_ifdef(int *ip)
 	labldef(loccnt, 1);
 
 	/* skip spaces */
-	while (isspace(prlnbuf[*ip]))
+	while (isspace((int)prlnbuf[*ip]))
 		(*ip)++;
 
 	/* get symbol */

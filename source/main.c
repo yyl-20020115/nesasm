@@ -114,14 +114,14 @@ parse_opt (int key, char *arg, struct argp_state *state)
 			header_opt = 0;
 			break;
 		case 'o':
-  			strncpy(bin_fname, arg, sizeof(bin_fname));
+  			strncpy(bin_fname, arg, sizeof(bin_fname)-1);
   			break;
   		case 'L':
-  			strncpy(lst_fname, arg, sizeof(lst_fname));
+  			strncpy(lst_fname, arg, sizeof(lst_fname)-1);
   			break;
 		case 'f':
 			sym_opt = 1;
-			if (arg) strncpy(sym_fname, arg, sizeof(sym_fname));
+			if (arg) strncpy(sym_fname, arg, sizeof(sym_fname)-1);
 			break;
 		case 'F':
 			sym_bank_offset_opt = atol(arg);
