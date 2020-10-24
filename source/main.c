@@ -116,7 +116,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		case 'o':
   			strncpy(bin_fname, arg, sizeof(bin_fname)-1);
   			break;
-  		case 'L':
+		case 'L':
   			strncpy(lst_fname, arg, sizeof(lst_fname)-1);
   			break;
 		case 'f':
@@ -205,6 +205,11 @@ main(int argc, char **argv)
 	{
 		strcpy(bin_fname, basename);
 		strcat(bin_fname, machine->rom_ext);
+	}
+	/* enable output to stroud if need */
+	else if (strcmp(bin_fname, "-") == 0)
+	{
+		out_stdout = 1;
 	}
 	char bin_basename[strlen(bin_fname)+1];
 	strcpy(bin_basename, bin_fname);
