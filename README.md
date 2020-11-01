@@ -1,4 +1,4 @@
-# nesasm CE v3.2 - a 6502 assembler with specific NES support
+# nesasm CE v3.3 - a 6502 assembler with specific NES support
 
 Just another modification of nesasm. Based on modification by Tim Hentenaar which is based on modification by Bob Rost which is based on modification of nesasm 2.51 from MagicKit.
 
@@ -6,6 +6,7 @@ Just another modification of nesasm. Based on modification by Tim Hentenaar whic
 
 * Support for much longer filenames and labels
 * Automatic generation of symbol files for FCEUX debugger
+* NES 2.0 support with very large files support, mappers up to 4095, submappers, etc.
 * GNU/POSIX style command line options
 * It's possible to define all output filenames now
 * Code cleanup: all warnings are fixed, PCE code leftovers removed

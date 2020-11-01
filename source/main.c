@@ -21,11 +21,11 @@
  *
  *  Modifications by:
  *    Bob Rost
- *    Alexey Avdyukhin
+ *    Alexey 'Cluster' Avdyukhin
  *
  */
  
-#define VERSION "v3.2"
+#define VERSION "v3.3"
 #define DESCRIPTION "a 6502 assembler with specific NES support"
 #define GITHUB_URL "https://github.com/ClusterM/nesasm/"
 
