@@ -59,7 +59,7 @@ $(COMMIT_INFO):
 # EXE
 #
 
-$(TARGNES) : $(OBJS)
+$(TARGNES): $(OBJS)
 	$(CC) -o $(TARGNES) $(OBJS) $(LDFLAGS)
 ifeq ($(OS),Windows_NT)
 	@for f in `cygcheck "$(TARGNES)" | grep .dll | grep msys` ; do cp -vf `cygpath "$$f"` $(EXEDIR)/ ; done

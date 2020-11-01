@@ -98,6 +98,13 @@
 #define P_PGROUP	47	// .procgroup
 #define P_ENDPG		48	// .endprocgroup
 #define P_CALL		49	// .call
+#define P_INESPRGRAM	50	// .inesprgram
+#define P_INESPRGNVRAM	51	// .inesprgnvram
+#define P_INESCHRRAM	52	// .ineschrram
+#define P_INESCHRNVRAM	53	// .ineschrnvram
+#define P_INESSUBMAP	54	// .inessubmap
+#define P_INESBAT	55	// .inesbat
+#define P_INESTIM	55	// .inestim
 
 /* symbol flags */
 #define MDEF	3	/* multiply defined */

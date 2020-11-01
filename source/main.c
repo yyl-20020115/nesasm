@@ -84,7 +84,7 @@ static struct argp_option options[] = {
 	{ "listing-level", 'l', "#", 0, "Listing file output level (0-3)" },
 	{ "listing-file", 'L', "<file.lst>", 0, "Name of the listing file" },
 	{ "warnings", 'W', 0, 0, "Show overflow warnings" },
-	{ "output", 'o', "<file.nes>", 0, "Name of the output file" },
+	{ "output", 'o', "<file.nes>", 0, "Name of the output file, use '-' for stdout" },
 	{ 0 }
 };
 
@@ -271,8 +271,8 @@ main(int argc, char **argv)
 	max_zp = 0x01;
 	max_bss = 0x0201;
 	max_bank = 0;
-	rom_limit = 0x100000;		/* 1MB */
-	bank_limit = 0x7F;
+	rom_limit = 94347264;		/* 0xEFF * 0x4000 + 0xEFF * 0x2000 */
+	bank_limit = 0x2CFC;    /* (0xEFF * 0x4000 + 0xEFF * 0x2000) / 0x2000 - 1 */
 	bank_base = 0;
 	errcnt = 0;
 

@@ -20,7 +20,7 @@ Just another modification of nesasm. Based on modification by Tim Hentenaar whic
       -l, --listing-level=#      Listing file output level (0-3)
       -L, --listing-file=<file.lst>   Name of the listing file
       -m, --macro-expansion      Force macro expansion in listing
-      -o, --output=<file.nes>    Name of the output file
+      -o, --output=<file.nes>    Name of the output file, use '-' for stdout
       -r, --raw                  Prevent adding a ROM header
       -s, --segment-usage        Show (more) segment usage
       -W, --warnings             Show overflow warnings
@@ -40,6 +40,7 @@ Here's a description of the different options:
 
      -o <file.nes>     Set output filename.
                        The default is input filename + ".nes" extension.
+                       Use '-' for stdout output.
 
      -f [prefix]       Enable generation of symbol files for FCEUX debugger,
                        optionally you can specify filenames prefix.
@@ -319,11 +320,27 @@ Other 'special' parameters can be used, here's a list of all the possible parame
               the compilation. Can be used within a macro for argument
               error detection.
 
-    INESPRG - Specifies the number of 16k prg banks.
+    INESPRG - Specifies the number of 16k PRG banks or just PRG size if it > $EFF.
 
-    INESCHR - Specifies the number of 8k chr banks.
+    INESCHR - Specifies the number of 8k CHR banks or just CHR size if it > $EFF.
 
-    INESMAP - Specifies the NES mapper used.
+    INESMAP - Specifies the NES mapper used, up to 4095.
 
-    INESMIR - Specifies VRAM mirroring of the banks. Refer to iNES header
-                  document (neshdr20.txt).
+    INESSUBMAP - Specifies the NES submapper used, up to 15.
+
+    INESMIR - Specifies VRAM mirroring of the banks.
+              0: Horizontal or mapper-controlled, 1: Vertical, 2: Hard-wired four-screen
+
+    INESPRGRAM - Specifies the size of PRG RAM.
+
+    INESPRGNVRAM - Specifies the size of PRG NVRAM (non-volatile).
+
+    INESCHRRAM - Specifies the size of CHR RAM.
+
+    INESCHRNVRAM - Specifies the size of CHR NVRAM (non-volatile).
+
+    INESBAT - Specifies "battery" and other non-volatile memory
+              0: Not present, 1: Present
+
+    INESTIM - Specifies CPU/PPU timing
+              0: RP2C02 ("NTSC NES"), 1: RP2C07 ("Licensed PAL NES"), 2: Multiple-region, 3: UMC 6527P ("Dendy")
