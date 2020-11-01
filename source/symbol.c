@@ -98,7 +98,7 @@ FILE* stlist_file(FILE *fp, char * basename, int n)
 		strcat(fname, ext);
 	}
 	if ((fp = fopen(fname, "w")) == NULL) {
-		printf("can not open file '%s'!\n", fname);
+		fprintf(stderr, "can not open file '%s'!\n", fname);
 		return 0;
 	}
 	return fp;

@@ -237,7 +237,7 @@ main(int argc, char **argv)
 
 	/* open the input file */
 	if (open_input(in_fname)) {
-		printf("Can not open input file '%s'!\n", in_fname);
+		fprintf(stderr, "Can not open input file '%s'!\n", in_fname);
 		exit(1);
 	}
 
@@ -354,7 +354,7 @@ main(int argc, char **argv)
 
 		/* abort pass on errors */
 		if (errcnt) {
-			printf("# %d error(s)\n", errcnt);
+			fprintf(stderr, "# %d error(s)\n", errcnt);
 			break;
 		}
 
@@ -376,7 +376,7 @@ main(int argc, char **argv)
 		if (pass == FIRST_PASS) {
 			if (xlist && list_level) {
 				if ((lst_fp = fopen(lst_fname, "w")) == NULL) {
-					printf("Can not open listing file '%s'!\n", lst_fname);
+					fprintf(stderr, "Can not open listing file '%s'!\n", lst_fname);
 					exit(1);
 				}
 				fprintf(lst_fp, "#[1]   %s\n", input_file[1].name);
@@ -390,7 +390,7 @@ main(int argc, char **argv)
 		/* open file */
 		if (out_stdout) fp = stdout;
 		else if ((fp = fopen(bin_fname, "wb")) == NULL) {
-			printf("Can not open binary file '%s'!\n", bin_fname);
+			fprintf(stderr, "Can not open binary file '%s'!\n", bin_fname);
 			exit(1);
 		}
 	
@@ -438,25 +438,25 @@ show_seg_usage(void)
 	int rom_free;
 	int ram_base = machine->ram_base;
 
-	printf("segment usage:\n");
-	printf("\n");
+	fprintf(stderr, "segment usage:\n");
+	fprintf(stderr, "\n");
 
 	/* zp usage */
 	if (max_zp <= 1)
-		printf("      ZP    -\n");
+		fprintf(stderr, "      ZP    -\n");
 	else {
 		start = ram_base;
 		stop  = ram_base + (max_zp - 1);
-		printf("      ZP    $%04X-$%04X  [%4i]\n", start, stop, stop - start + 1);
+		fprintf(stderr, "      ZP    $%04X-$%04X  [%4i]\n", start, stop, stop - start + 1);
 	}
 
 	/* bss usage */
 	if (max_bss <= 0x201)
-		printf("     BSS    -\n");
+		fprintf(stderr, "     BSS    -\n");
 	else {
 		start = ram_base + 0x200;
 		stop  = ram_base + (max_bss - 1);
-		printf("     BSS    $%04X-$%04X  [%4i]\n", start, stop, stop - start + 1);
+		fprintf(stderr, "     BSS    $%04X-$%04X  [%4i]\n", start, stop, stop - start + 1);
 	}
 
 	/* bank usage */
@@ -464,7 +464,7 @@ show_seg_usage(void)
 	rom_free = 0;
 
 	if (max_bank)
-		printf("\t\t\t\t    USED/FREE\n");
+		fprintf(stderr, "\t\t\t\t    USED/FREE\n");
 
 	/* scan banks */
 	for (i = 0; i <= max_bank; i++) {
@@ -479,10 +479,10 @@ show_seg_usage(void)
 
 		/* display bank infos */
 		if (nb)			
-			printf("BANK% 4i    %20s    %4i/%4i\n",
+			fprintf(stderr, "BANK% 4i    %20s    %4i/%4i\n",
 					i, bank_name[i], nb, 8192 - nb);
 		else {
-			printf("BANK% 4i    %20s       0/8192\n", i, bank_name[i]);
+			fprintf(stderr, "BANK% 4i    %20s       0/8192\n", i, bank_name[i]);
 			continue;
 		}
 
@@ -515,7 +515,7 @@ show_seg_usage(void)
 					break;
 
 			/* display section infos */
-			printf("    %s    $%04X-$%04X  [%4i]\n",
+			fprintf(stderr, "    %s    $%04X-$%04X  [%4i]\n",
 					section_name[section],	/* section name */
 				    start + page,			/* starting address */
 					addr  + page - 1,		/* end address */
@@ -526,7 +526,7 @@ show_seg_usage(void)
 	/* total */
 	rom_used = (rom_used + 1023) >> 10;
 	rom_free = (rom_free) >> 10;
-	printf("\t\t\t\t    ---- ----\n");
-	printf("\t\t\t\t    %4iK%4iK\n", rom_used, rom_free);
+	fprintf(stderr, "\t\t\t\t    ---- ----\n");
+	fprintf(stderr, "\t\t\t\t    %4iK%4iK\n", rom_used, rom_free);
 }
 

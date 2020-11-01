@@ -268,9 +268,9 @@ write_srec(char *file, char *ext, int base)
 
 	/* status message */
 	if (!strcmp(ext, "mx"))
-		printf("writing mx file... ");
+		fprintf(stderr, "writing mx file... ");
 	else
-		printf("writing s-record file... ");
+		fprintf(stderr, "writing s-record file... ");
 
 	/* flush output */
 	fflush(stdout);
@@ -282,7 +282,7 @@ write_srec(char *file, char *ext, int base)
 
 	/* open the file */
 	if ((fp = fopen(fname, "w")) == NULL) {
-		printf("can not open file '%s'!\n", fname);
+		fprintf(stderr, "can not open file '%s'!\n", fname);
 		return;
 	}
 
@@ -343,7 +343,7 @@ write_srec(char *file, char *ext, int base)
 
 	/* ok */
 	fclose(fp);
-	printf("OK\n");
+	fprintf(stderr, "OK\n");
 }
 
 
@@ -397,12 +397,12 @@ warning(char *stptr)
 	/* update the current file name */
 	if (infile_error != infile_num) {
 		infile_error  = infile_num;
-		printf("#[%i]   %s\n", infile_num, input_file[infile_num].name);
+		fprintf(stderr, "#[%i]   %s\n", infile_num, input_file[infile_num].name);
 	}
 
 	/* output the line and the error message */
 	loadlc(loccnt, 0);
-	printf("%s\n", prlnbuf);
-	printf("       %s\n", stptr);
+	fprintf(stderr, "%s\n", prlnbuf);
+	fprintf(stderr, "       %s\n", stptr);
 }
 
