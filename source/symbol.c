@@ -420,3 +420,33 @@ lablremap(void)
 	}
 }
 
+
+/* ----
+ * constset()
+ * ----
+ * create/update a predefines constant (.equ)
+ */
+
+void
+constset(char *name, int val)
+{
+	int len;
+
+	len = strlen(name);
+	lablptr = NULL;
+
+	if (len) {
+		symbol[0] = len;
+		strcpy(&symbol[1], name);
+		lablptr = stlook(1);
+
+		if (lablptr) {
+			lablptr->type = DEFABS;
+			lablptr->value = val;
+			lablptr->equ = 1;
+		}
+	}
+
+	/* ok */
+	return;
+}

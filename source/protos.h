@@ -115,3 +115,4 @@ int  labldef(int lval, int flag);
 void lablset(char *name, int val);
 void lablremap(void);
 void stlist(char *file, int bank_offset);
+void constset(char *name, int val);

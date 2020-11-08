@@ -232,9 +232,8 @@ typedef struct t_machine {
 	unsigned int ram_bank;
 	struct t_opcode *inst;
 	struct t_opcode *pseudo_inst;
-    int  (*pack_8x8_tile)(unsigned char *, void *, int, int);
-    int  (*pack_16x16_tile)(unsigned char *, void *, int,  int);
-    int  (*pack_16x16_sprite)(unsigned char *, void *, int,  int);
-    void (*write_header)(FILE *, int);
+	int  (*pack_8x8_tile)(unsigned char *, void *, int, int);
+	int  (*pack_16x16_tile)(unsigned char *, void *, int,  int);
+	int  (*pack_16x16_sprite)(unsigned char *, void *, int,  int);
+	void (*write_header)(FILE *, int);
 } MACHINE;
-
