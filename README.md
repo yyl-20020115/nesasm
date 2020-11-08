@@ -7,6 +7,7 @@ Just another modification of nesasm. Based on modification by Tim Hentenaar whic
 * Support for much longer filenames and labels
 * Automatic generation of symbol files for FCEUX debugger
 * NES 2.0 support with very large files support, mappers up to 4095, submappers, etc.
+* Predefined NES specific constants: PPU/APU registers
 * GNU/POSIX style command line options
 * It's possible to define all output filenames now
 * Code cleanup: all warnings are fixed, PCE code leftovers removed
@@ -120,6 +121,42 @@ You can also use predefined or user-defined functions in an expression.
 * SIZEOF() - Returns the size of a data element.
 
 
+### Predefined constants
+
+There are predefines NES register addresses:
+
+* PPUCTRL and PPU_CTRL     - $2000
+* PPUMASK and PPU_MASK     - $2001
+* PPUSTATUS and PPU_STATUS - $2002
+* OAMADDR and OAM_ADDR     - $2003
+* OAMDATA and OAM_DATA     - $2004
+* PPUSCROLL and PPU_SCROLL - $2005
+* PPUADDR and PPU_ADDR     - $2006
+* PPUDATA and PPU_DATA     - $2007
+* OAMDMA and OAM_DMA       - $4014
+* SQ1VOL and SQ1_VOL       - $4000
+* SQ1SWEEP and SQ1_SWEEP   - $4001
+* SQ1LO and SQ1_LO         - $4002
+* SQ1HI and SQ1_HI         - $4003
+* SQ2VOL and SQ2_VOL       - $4004
+* SQ2SWEEP and SQ2_SWEEP   - $4005
+* SQ2LO and SQ2_LO         - $4006
+* SQ2HI and SQ2_HI         - $4007
+* TRILINEAR and TRI_LINEAR - $4008
+* TRILO and TRI_LO         - $400A
+* TRIHI and TRI_HI         - $400B
+* NOISEVOL and NOISE_VOL   - $400C
+* NOISELO and NOISE_LO     - $400E
+* NOISEHI and NOISE_HI     - $400F
+* DMCFREQ and DMC_FREQ     - $4010
+* DMCRAW and DMC_RAW       - $4011
+* DMCSTART and DMC_START   - $4012
+* DMCLEN and DMC_LEN       - $4013
+* APUSTATUS and APU_STATUS - $4015
+* JOY1                     - $4016
+* JOY2 and JOY2_FRAME      - $4017
+
+
 ### User-defined functions
 
 User-defined functions are declared with the .FUNC directive, for example:
@@ -133,6 +170,7 @@ To call a function simply enclose arguments within parenthesis and separate them
     stw #SCR_ADDR(10,4)+$2000,<$20
 
 User-defined functions can be very useful, one often needs to use the same calculation again and again in expressions. Defining a function will save you a lot of work, and reduce typo errors. :) Note that function calls can be nested, you can call one function from another without any problem, however, recursive calls will produce an error.
+
 
 ### Macros
 
