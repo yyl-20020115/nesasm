@@ -25,7 +25,7 @@
  *
  */
  
-#define VERSION "v3.3"
+#define VERSION "v3.4"
 #define DESCRIPTION "a 6502 assembler with specific NES support"
 #define GITHUB_URL "https://github.com/ClusterM/nesasm/"
 
@@ -272,6 +272,7 @@ main(int argc, char **argv)
 	constset("PPU_CTRL", 0x2000);
 	constset("PPUMASK", 0x2001);
 	constset("PPU_MASK", 0x2001);
+	constset("PPUSTAT", 0x2002);
 	constset("PPUSTATUS", 0x2002);
 	constset("PPU_STATUS", 0x2002);
 	constset("OAMADDR", 0x2003);
@@ -286,7 +287,6 @@ main(int argc, char **argv)
 	constset("PPU_ADDR", 0x2006);
 	constset("PPUDATA", 0x2007);
 	constset("PPU_DATA", 0x2007);
-	constset("PPU_OAM_DMA", 0x4014);
 	constset("SQ1VOL", 0x4000);
 	constset("SQ1_VOL", 0x4000);
 	constset("SQ1SWEEP", 0x4001);
@@ -325,6 +325,7 @@ main(int argc, char **argv)
 	constset("DMC_LEN", 0x4013);
 	constset("OAMDMA", 0x4014);
 	constset("OAM_DMA", 0x4014);
+	constset("PPU_OAM_DMA", 0x4014);
 	constset("APUSTATUS", 0x4015);
 	constset("APU_STATUS", 0x4015);
 	constset("JOY1", 0x4016);
