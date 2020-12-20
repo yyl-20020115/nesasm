@@ -110,7 +110,7 @@ void stlist(char *file, int bank_offset)
 	struct t_symbol *local;
 	FILE *files[256];
 	memset(files, 0, sizeof(files)); 
-	int i, j, bank, fnum;
+	int i, bank, fnum;
 	for (i = 0; i < sizeof(hash_tbl) / sizeof(hash_tbl[0]); i++)
 	{
 		sym = hash_tbl[i];
@@ -123,23 +123,22 @@ void stlist(char *file, int bank_offset)
 			bank = sym->value < 0x8000 ? -1 : sym->bank/2 + bank_offset;
 			fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 			files[fnum] = stlist_file(files[fnum], file, bank);
-			//fprintf(files[fnum], "$%04X#%s# %d %d\n", sym->value, sym->name+1, sym->reserved, sym->equ);
-      fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
-			for (j = 1; j < sym->data_size; j++)
-				//fprintf(files[fnum], "$%04X#%s+%d# %d %d\n", sym->value+j, sym->name+1, j, sym->reserved, sym->equ);
-        fprintf(files[fnum], "$%04X#%s+%d#\n", sym->value+j, sym->name+1, j);
+      if (sym->data_size <= 1)
+        fprintf(files[fnum], "$%04X#%s#\n", sym->value, sym->name+1);
+      else
+        fprintf(files[fnum], "$%04X/%02X#%s#\n", sym->value, sym->data_size, sym->name+1);
+
 			local = sym->local;
 			while (local)
 			{
 				bank = local->value < 0x8000 ? -1 : local->bank/2 + bank_offset;
 				fnum = bank >= 0 ? bank : (sizeof(files) / sizeof(FILE*) - 1);
 				files[fnum] = stlist_file(files[fnum], file, bank);
-				//fprintf(files[fnum], "$%04X#%s (%s)# %d %d\n", local->value, local->name+1, sym->name+1, local->reserved, local->equ);
-        fprintf(files[fnum], "$%04X#%s (%s)#\n", local->value, local->name+1, sym->name+1);
-				for (j = 1; j < sym->data_size; j++)
-					//fprintf(files[fnum], "$%04X#%s+%d (%s)# %d %d\n", local->value+j, local->name+1, j, sym->name+1, local->reserved, local->equ);
-          fprintf(files[fnum], "$%04X#%s+%d (%s)#\n", local->value+j, local->name+1, j, sym->name+1);
-	       			local = local->next;
+        if (sym->data_size <= 1)
+          fprintf(files[fnum], "$%04X#%s (%s)#\n", local->value, local->name+1, sym->name+1);
+        else
+          fprintf(files[fnum], "$%04X/%02X#%s (%s)#\n", local->value, local->data_size, local->name+1, sym->name+1);
+   			local = local->next;
 			}
 		} while ((sym = sym->next) != NULL);
 	}
@@ -192,7 +191,7 @@ struct t_symbol *stlook(int flag)
 	else {
 		/* search symbol */
 		hash = symhash();
-		sym  = hash_tbl[hash];
+		sym = hash_tbl[hash];
 		while (sym) {
 			if (!strcmp(symbol, sym->name))
 				break;			
@@ -236,15 +235,15 @@ struct t_symbol *stinstall(int hash, int type)
 	}
 
 	/* init the symbol struct */
-	sym->type  = if_expr ? IFUNDEF : UNDEF;
+	sym->type = if_expr ? IFUNDEF : UNDEF;
 	sym->value = 0;
 	sym->local = NULL;
-	sym->proc  = NULL;
-	sym->bank  = RESERVED_BANK;
-	sym->nb    = 0;
-	sym->size  = 0;
-	sym->page  = -1;
-	sym->vram  = -1;
+	sym->proc = NULL;
+	sym->bank = RESERVED_BANK;
+	sym->nb   = 0;
+	sym->size = 0;
+	sym->page = -1;
+	sym->vram = -1;
 	sym->pal   = -1;
 	sym->refcnt = 0;
 	sym->reserved = 0;
@@ -334,7 +333,7 @@ labldef(int lval, int flag)
 	/* second pass */
 	else {
 		if ((lablptr->value != lval) ||
-		   ((flag) && (bank < bank_limit) && (lablptr->bank  != bank_base + bank)))
+		   ((flag) && (bank < bank_limit) && (lablptr->bank != bank_base + bank)))
 		{
 			fatal_error("Internal error[1]!");
 			return (-1);
