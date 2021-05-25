@@ -25,7 +25,7 @@
  *
  */
  
-#define VERSION "v3.4"
+#define VERSION "v3.5"
 #define DESCRIPTION "a 6502 assembler with specific NES support"
 #define GITHUB_URL "https://github.com/ClusterM/nesasm/"
 
@@ -74,6 +74,7 @@ static char argp_program_args_desc[] = "<source.asm>";
 
 /* The options we understand. */
 static struct argp_option options[] = {
+  { "equ", 'D', "<name>=<value>", 0, "Assign a value to a symbol" },
   { "segment-usage", 's', 0, 0, "Show (more) segment usage" },
   { 0, 'S', 0, OPTION_HIDDEN, "" },
   { "listing", 'i', 0, 0, "Force listing" },
@@ -88,12 +89,53 @@ static struct argp_option options[] = {
   { 0 }
 };
 
+/* Parse a --equ option. */
+static int
+parse_equ_opt (char *equ)
+{
+  /* Split by '=' character */
+  char* value_str = strchr(equ, '=');
+  if (!value_str)
+  {
+    printf("Invalid assigment format: %s\n", equ);
+    return 1;
+  }
+  *value_str = 0;
+  value_str++;
+  /* Determine base */
+  int base = 10;
+  if ((strlen(value_str) > 0) && (value_str[0] == '%'))
+  {
+    base = 2;
+    value_str++;
+  }
+  if ((strlen(value_str) >= 0) && (value_str[0] == '$'))
+  {
+    base = 16;
+    value_str++;
+  }
+  /* Check for empty value */
+  if (strlen(value_str) == 0)
+  {
+    printf("Value for %s is empty\n", equ);
+    return 1;
+  }
+  /* Parse and set */
+  int value = strtol(value_str, 0, base);
+  constset(equ, value);
+  return 0;
+}
+
 /* Parse a single option. */
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
 {
   switch (key)
   {
+    case 'D':
+      if (parse_equ_opt(arg))
+        argp_usage(state);
+      break;
     case 's':
       dump_seg++;
       if (dump_seg > 2) dump_seg = 2;
@@ -141,7 +183,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case ARGP_KEY_END:
       if (state->arg_num < 1)
         /* Not enough arguments. */
-        argp_usage (state);
+        argp_usage(state);
       break;
     default:
       return ARGP_ERR_UNKNOWN;
@@ -186,6 +228,14 @@ main(int argc, char **argv)
   bin_fname[0] = 0;
   lst_fname[0] = 0;
   sym_fname[0] = 0;
+
+  /* clear symbol hash tables */
+  for (i = 0; i < 256; i++) {
+    hash_tbl[i]  = NULL;
+    macro_tbl[i] = NULL;
+    func_tbl[i]  = NULL;
+    inst_tbl[i]  = NULL;
+  }
 
   /* parse command line */
   argp_parse(&argp, argc, argv, 0, 0, 0);
@@ -244,14 +294,6 @@ main(int argc, char **argv)
   /* clear the ROM array */
   memset(rom, zero_fill ? 0 : 0xff, 8192 * 128);
   memset(map, zero_fill ? 0 : 0xff, 8192 * 128);
-
-  /* clear symbol hash tables */
-  for (i = 0; i < 256; i++) {
-    hash_tbl[i]  = NULL;
-    macro_tbl[i] = NULL;
-    func_tbl[i]  = NULL;
-    inst_tbl[i]  = NULL;
-  }
 
   /* fill the instruction hash table */
   addinst(base_inst);
