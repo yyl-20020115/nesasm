@@ -1,4 +1,4 @@
-# nesasm CE v3.4 - a 6502 assembler with specific NES support
+# nesasm CE v3.5 - a 6502 assembler with specific NES support
 
 Just another modification of nesasm. Based on modification by Tim Hentenaar which is based on modification by Bob Rost which is based on modification of nesasm 2.51 from MagicKit which is based on 6502 assembler by J. H. Van Ornum.
 
@@ -10,12 +10,14 @@ Just another modification of nesasm. Based on modification by Tim Hentenaar whic
 * Predefined NES specific constants: PPU/APU registers
 * GNU/POSIX style command line options
 * It's possible to define all output filenames now
+* Option to assign a value to a symbol from command line
 * Code cleanup: all warnings are fixed, PCE code leftovers removed
 
 ## Usage
 
     Usage: nesasm [OPTION...] <source.asm>
 
+      -D, --equ=<name>=<value>   Assign a value to a symbol
       -f, --symbols[=<prefix>]   Create FCEUX symbol files
       -F, --symbols-offset=<offset>   Bank offset for FCEUX symbol files
       -i, --listing              Force listing
@@ -43,6 +45,12 @@ Here's a description of the different options:
      -o <file.nes>     Set output filename.
                        The default is input filename + ".nes" extension.
                        Use '-' for stdout output.
+
+     -D <name>=<value> Assign a value to a symbol.
+                       Example: `-D delay=10`
+                       It will be equal to: `delay .equ 10` at the begining of
+                       your code, also you can use '$' and '%' prefixes for
+                       hexademical and binary values.
 
      -f [prefix]       Enable generation of symbol files for FCEUX debugger,
                        optionally you can specify filenames prefix.
