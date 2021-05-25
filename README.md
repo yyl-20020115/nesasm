@@ -50,7 +50,7 @@ Here's a description of the different options:
                        Example: -D delay=10
                        It will be equal to: delay .equ 10
                        at the beginning of your code, also you can use '$' and '%'
-                       prefixes for hexademical and binary values.
+                       prefixes for hexadecimal and binary values.
 
      -f [prefix]       Enable generation of symbol files for FCEUX debugger,
                        optionally you can specify filenames prefix.
