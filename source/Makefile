@@ -18,6 +18,9 @@ COMMIT_DIRTY = $(shell git diff-index HEAD)
 ifneq ($(COMMIT_DIRTY),)
   COMMIT += (dirty)
 endif
+ifeq ($(COMMIT),)
+  COMMIT = "unknown"
+endif
 
 ifeq ($(OS),Windows_NT)
   TARGNES  = $(EXEDIR)/nesasm.exe
@@ -54,7 +57,7 @@ nes.o    : nes.h
 
 .PHONY: $(COMMIT_INFO)
 $(COMMIT_INFO):
-	@echo "#define COMMIT \"$(COMMIT)\"" > $(COMMIT_INFO)
+	@printf "#define COMMIT \"$(COMMIT)\"\\n" > $(COMMIT_INFO)
 
 # EXE
 #
