@@ -1,4 +1,4 @@
-# nesasm CE v3.5 - a 6502 assembler with specific NES support
+# nesasm CE v3.6 - a 6502 assembler with specific NES support
 
 Just another modification of nesasm. Based on modification by Tim Hentenaar which is based on modification by Bob Rost which is based on modification of nesasm 2.51 from MagicKit which is based on 6502 assembler by J. H. Van Ornum.
 
@@ -17,7 +17,8 @@ Just another modification of nesasm. Based on modification by Tim Hentenaar whic
 
     Usage: nesasm [OPTION...] <source.asm>
 
-      -D, --equ=<name>=<value>   Assign a value to a symbol
+      -C, --sequ=<name>=<value>  Assign a string value to a symbol
+      -D, --equ=<name>=<value>   Assign an integer value to a symbol
       -f, --symbols[=<prefix>]   Create FCEUX symbol files
       -F, --symbols-offset=<offset>   Bank offset for FCEUX symbol files
       -i, --listing              Force listing
@@ -46,11 +47,16 @@ Here's a description of the different options:
                        The default is input filename + ".nes" extension.
                        Use '-' for stdout output.
 
-     -D <name>=<value> Assign a value to a symbol.
+     -D <name>=<value> Assign an integer value to a symbol.
                        Example: -D delay=10
                        It will be equal to: delay .equ 10
                        at the beginning of your code, also you can use '$' and '%'
                        prefixes for hexadecimal and binary values.
+
+     -C <name>=<value> Assign a string value to a symbol.
+                       Example: -C image_file=image.bin
+                       It will be equal to: image_file .sequ "image.bin"
+                       at the beginning of your code.
 
      -f [prefix]       Enable generation of symbol files for FCEUX debugger,
                        optionally you can specify filenames prefix.
@@ -255,8 +261,10 @@ Other 'special' parameters can be used, here's a list of all the possible parame
               won't have any effect if you use the '-m' command line
               option.
 
-    EQU     - Assign a value to a symbol. The character '=' has
+    EQU     - Assign an integer value to a symbol. The character '=' has
               the same function too.
+
+    SEQU    - Assign a string value to a symbol.
 
     BANK    - Select a 8KB ROM bank (0-127) and reset the location
               counter to the latest known position in this bank.
