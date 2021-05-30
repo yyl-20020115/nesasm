@@ -39,6 +39,10 @@ do_func(int *ip)
         fatal_error("Function already defined!");
         return;
 
+      case DEFSTR:
+        fatal_error("Symbol already used by a string constant!");
+        return;
+
       default:
         fatal_error("Symbol already used by a label!");
         return;

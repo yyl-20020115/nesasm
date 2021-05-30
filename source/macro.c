@@ -56,6 +56,10 @@ do_macro(int *ip)
         fatal_error("Symbol already used by a function!");
         return;
 
+      case DEFSTR:
+        fatal_error("Symbol already used by a string constant!");
+        return;
+
       default:
         fatal_error("Symbol already used by a label!");
         return;

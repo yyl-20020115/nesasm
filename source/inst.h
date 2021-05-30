@@ -61,7 +61,7 @@ struct t_opcode base_inst[57] = {
 };
 
 /* pseudo instruction table */
-struct t_opcode base_pseudo[75] = {
+struct t_opcode base_pseudo[77] = {
   {NULL,  "=",       do_equ,     PSEUDO, P_EQU,     0},
 
   {NULL,  "BANK",    do_bank,    PSEUDO, P_BANK,    0},
@@ -79,6 +79,7 @@ struct t_opcode base_pseudo[75] = {
   {NULL,  "ENDP",    do_endp,    PSEUDO, P_ENDP,    P_PROC},
   {NULL,  "ENDPROCGROUP", do_endp,    PSEUDO, P_ENDPG,   P_PGROUP},
   {NULL,  "EQU",     do_equ,     PSEUDO, P_EQU,     0},
+  {NULL,  "SEQU",    do_sequ,    PSEUDO, P_SEQU,    0},
   {NULL,  "FAIL",    do_fail,    PSEUDO, P_FAIL,    0},
   {NULL,  "FUNC",    do_func,    PSEUDO, P_FUNC,    0},
   {NULL,  "IF",      do_if,      PSEUDO, P_IF,      0},
@@ -116,6 +117,7 @@ struct t_opcode base_pseudo[75] = {
   {NULL, ".ENDP",    do_endp,    PSEUDO, P_ENDP,    P_PROC},
   {NULL, ".ENDPROCGROUP", do_endp,    PSEUDO, P_ENDPG,   P_PGROUP},
   {NULL, ".EQU",     do_equ,     PSEUDO, P_EQU,     0},
+  {NULL, ".SEQU",    do_sequ,    PSEUDO, P_SEQU,    0},
   {NULL, ".FAIL",    do_fail,    PSEUDO, P_FAIL,    0},
   {NULL, ".FUNC",    do_func,    PSEUDO, P_FUNC,    0},
   {NULL, ".IF",      do_if,      PSEUDO, P_IF,      0},

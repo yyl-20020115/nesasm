@@ -25,7 +25,7 @@
  *
  */
  
-#define VERSION "v3.5"
+#define VERSION "v3.6"
 #define DESCRIPTION "a 6502 assembler with specific NES support"
 #define GITHUB_URL "https://github.com/ClusterM/nesasm/"
 
@@ -74,7 +74,8 @@ static char argp_program_args_desc[] = "<source.asm>";
 
 /* The options we understand. */
 static struct argp_option options[] = {
-  { "equ", 'D', "<name>=<value>", 0, "Assign a value to a symbol" },
+  { "equ", 'D', "<name>=<value>", 0, "Assign an integer value to a symbol" },
+  { "sequ", 'C', "<name>=<value>", 0, "Assign a string value to a symbol" },
   { "segment-usage", 's', 0, 0, "Show (more) segment usage" },
   { 0, 'S', 0, OPTION_HIDDEN, "" },
   { "listing", 'i', 0, 0, "Force listing" },
@@ -126,6 +127,23 @@ parse_equ_opt (char *equ)
   return 0;
 }
 
+/* Parse a --sequ option. */
+static int
+parse_sequ_opt (char *equ)
+{
+  /* Split by '=' character */
+  char* value_str = strchr(equ, '=');
+  if (!value_str)
+  {
+    printf("Invalid assigment format: %s\n", equ);
+    return 1;
+  }
+  *value_str = 0;
+  value_str++;
+  strconstset(equ, value_str);
+  return 0;
+}
+
 /* Parse a single option. */
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
@@ -134,6 +152,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
   {
     case 'D':
       if (parse_equ_opt(arg))
+        argp_usage(state);
+      break;
+    case 'C':
+      if (parse_sequ_opt(arg))
         argp_usage(state);
       break;
     case 's':

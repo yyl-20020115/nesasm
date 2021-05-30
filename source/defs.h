@@ -104,7 +104,8 @@
 #define P_INESCHRNVRAM  53  // .ineschrnvram
 #define P_INESSUBMAP  54  // .inessubmap
 #define P_INESBAT  55  // .inesbat
-#define P_INESTIM  55  // .inestim
+#define P_INESTIM  56  // .inestim
+#define P_SEQU     57  // .sequ
 
 /* symbol flags */
 #define MDEF  3  /* multiply defined */
@@ -113,6 +114,7 @@
 #define DEFABS  4  /* defined - two byte address */
 #define MACRO  5  /* used for a macro name */
 #define FUNC  6  /* used for a function */
+#define DEFSTR  7  /* defined - string */
 
 /* operation code flags */
 #define PSEUDO    0x0008000
@@ -181,6 +183,7 @@ typedef struct t_symbol {
   struct t_proc   *proc;
   int  type;
   int  value;
+  char* str_value;
   int  bank;
   int  page;
   int  nb;

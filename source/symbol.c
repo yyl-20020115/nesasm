@@ -237,6 +237,7 @@ struct t_symbol *stinstall(int hash, int type)
   /* init the symbol struct */
   sym->type = if_expr ? IFUNDEF : UNDEF;
   sym->value = 0;
+  sym->str_value = NULL;
   sym->local = NULL;
   sym->proc = NULL;
   sym->bank = RESERVED_BANK;
@@ -309,6 +310,10 @@ labldef(int lval, int flag)
 
     case FUNC:
       error("Symbol already used by a function!");
+      return (-1);
+
+    case DEFSTR:
+      error("Symbol already used by a string constant!");
       return (-1);
 
     default:
@@ -423,7 +428,7 @@ lablremap(void)
 /* ----
  * constset()
  * ----
- * create/update a predefines constant (.equ)
+ * create/update a predefined constant (.equ)
  */
 
 void
@@ -448,4 +453,68 @@ constset(char *name, int val)
 
   /* ok */
   return;
+}
+
+/* ----
+ * strconstset()
+ * ----
+ * create/update a predefined string constant
+ */
+
+void
+strconstset(char *name, char *val)
+{
+  int len;
+
+  len = strlen(name);
+  lablptr = NULL;
+
+  if (len) {
+    symbol[0] = len;
+    strcpy(&symbol[1], name);
+    lablptr = stlook(1);
+
+    if (lablptr) {
+      if (lablptr->str_value)
+        error("Symbol already used by a string constant!");
+      lablptr->type = DEFSTR;
+      lablptr->str_value = malloc(strlen(val) + 1);
+      strcpy((char*)lablptr->str_value, val);
+      lablptr->value = -1;
+      lablptr->equ = 1;
+    }
+  }
+
+  /* ok */
+  return;
+}
+
+/* ----
+ * strconstget()
+ * ----
+ * fills buffer with a predefined string constant value
+ */
+
+int
+strconstget(char *buffer, int size)
+{
+  t_symbol* lablptr = stlook(0);
+
+  if (lablptr && (lablptr->type == DEFSTR)) {
+    if (strlen(lablptr->str_value) > size)
+      error("String too long!");
+    strcpy(buffer, lablptr->str_value);
+  }
+  else if (lablptr)
+  {
+    error("It is not a symbol constant!");
+    return (-1);
+  }
+  else {
+    error("Symbol constant is not defined!");
+    return (-1);
+  }
+
+  /* ok */
+  return (0);
 }

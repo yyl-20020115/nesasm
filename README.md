@@ -231,7 +231,7 @@ Other 'special' parameters can be used, here's a list of all the possible parame
                each macro; can be used to define local symbols inside
                macros:
 
-                   abs    .macro
+                    abs    .macro
                            lda   \1
                            bpl   .x\@
                            eor   #$FF

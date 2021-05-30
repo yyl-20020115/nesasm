@@ -803,27 +803,44 @@ getstring(int *ip, char *buffer, int size)
   while (isspace((int)prlnbuf[*ip]))
     (*ip)++;
 
-  /* string must be enclosed */
-  if (prlnbuf[(*ip)++] != '\"') {
-    error("Incorrect string syntax!");
-    return (0);
-  }
-
-  /* get string */
-  i = 0;
-  for (;;) {
-    c = prlnbuf[(*ip)++];
-    if (c == '\"')
-      break;
-    if (i >= size) {
-      error("String too long!");
-      return (0);
+  if (prlnbuf[*ip] == '\"') {
+    /* string value */
+    (*ip)++;
+    /* get string */
+    i = 0;
+    for (;;) {
+      c = prlnbuf[(*ip)++];
+      if (c == '\"' || !c)
+        break;
+      if (i >= size) {
+        error("String too long!");
+        return (0);
+      }
+      buffer[i++] = c;
     }
-    buffer[i++] = c;
+    /* end the string */
+    buffer[i] = '\0';
   }
+  else {
+    /* string constant */
 
-  /* end the string */
-  buffer[i] = '\0';
+    /* get constant name */
+    i = 1;
+    for (;;) {
+      c = prlnbuf[(*ip)++];
+      if (isspace(c) || !c)
+        break;
+      if (i >= SBOLSZ) {
+        error("String constant name too long!");
+        return (0);
+      }
+      symbol[i++] = c;
+    }
+    symbol[0] = i - 1;
+    symbol[i] = '\0';
+    if (strconstget(buffer, size))
+      return 0;
+  }
 
   /* skip spaces */
   while (isspace((int)prlnbuf[*ip]))
