@@ -400,6 +400,22 @@ Other 'special' parameters can be used, here's a list of all the possible parame
     INESTIM - Specifies CPU/PPU timing
               0: RP2C02 ("NTSC NES"), 1: RP2C07 ("Licensed PAL NES"), 2: Multiple-region, 3: UMC 6527P ("Dendy")
 
+
+## How to build
+
+### Linux
+* Just run `make all` from `sources` directory
+
+### Windows
+* Install [MSYS2](https://www.msys2.org/)
+* Install *base-devel*, *gcc*, *git* and *libargp-devel* packages using command: `pacman -S base-devel gcc git libargp-devel`
+* Run `make all` from `sources` directory
+
+### MacOS
+* Install *argp-standalone* package using command: `brew install argp-standalone`
+* Run `make all` from `sources` directory
+
+
 ## Contacts
 
 https://clusterrr.com
