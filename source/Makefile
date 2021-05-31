@@ -2,9 +2,14 @@ RM       = rm -f
 CC       = gcc
 COMMIT_INFO = commit.h
 
-CFLAGS   = -O2 -Wall
+CFLAGS   = -O2 -Wall -Wno-restrict -Wno-unknown-warning-option
 ifeq ($(OS),Windows_NT)
   LDFLAGS += -largp
+else
+  UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+	  LDFLAGS += -largp
+	endif
 endif
 
 OBJS     = main.o input.o assemble.o expr.o code.o command.o\
