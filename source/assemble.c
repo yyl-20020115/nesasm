@@ -199,7 +199,7 @@ assemble(void)
   flag = oplook(&ip);
   if (flag < 0) {
     labldef(loccnt, 1);
-    if ((flag == -1))
+    if (flag == -1)
       error("Unknown instruction!");
     if ((flag == -2) && (pass == LAST_PASS)) {
       if (lablptr)
