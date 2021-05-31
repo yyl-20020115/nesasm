@@ -399,3 +399,13 @@ Other 'special' parameters can be used, here's a list of all the possible parame
 
     INESTIM - Specifies CPU/PPU timing
               0: RP2C02 ("NTSC NES"), 1: RP2C07 ("Licensed PAL NES"), 2: Multiple-region, 3: UMC 6527P ("Dendy")
+
+## Contacts
+
+https://clusterrr.com
+
+clusterrr@clusterrr.com
+
+
+[![C/C++ CI](https://github.com/ClusterM/nesasm/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/ClusterM/nesasm/actions/workflows/c-cpp.yml)
+
