@@ -14,7 +14,7 @@ endif
 
 OBJS     = main.o input.o assemble.o expr.o code.o command.o\
          macro.o func.o proc.o symbol.o output.o crc.o\
-         mml.o nes.o
+         nes.o
 
 EXEDIR   = ..
 

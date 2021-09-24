@@ -92,7 +92,6 @@
 #define P_OPT    41  // .opt
 #define P_INCTILE  42  // .inctile
 #define P_INCMAP  43  // .incmap
-#define P_MML    44  // .mml
 #define P_PROC    45  // .proc
 #define P_ENDP    46  // .endp
 #define P_PGROUP  47  // .procgroup
