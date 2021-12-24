@@ -1,6 +1,8 @@
+%global		gitcommit	"2b39ec6"
+
 Name:		nesasm
 Version:	3.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	6502 assembler with specific NES support
 
 License:	MIT
@@ -19,13 +21,12 @@ by J. H. Van Ornum.
 %prep
 %setup -q 
 
-
 %build
-make %{?_smp_mflags} CFLAGS="%{optflags}" -C source/
+make %{?_smp_mflags} EXTRA_CFLAGS="%{optflags}" COMMIT="%gitcommit" -C source/
 
 
 %install
-install -pD -m 755 %{name} %buildroot%_bindir/%{name}
+install -pD -m 755 source/%{name} %buildroot%_bindir/%{name}
 
 
 %files
@@ -33,5 +34,8 @@ install -pD -m 755 %{name} %buildroot%_bindir/%{name}
 %_bindir/*
 
 %changelog
+* Fri Dec 10 2021 Andrew Clark <andrewclarkii@gmail.com> - 3.6-2
+- specfile changes
+
 * Sat Dec 04 2021 Andrew Clark <andrewclarkii@gmail.com> - 3.6-1
 - Initial version
