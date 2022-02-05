@@ -18,6 +18,11 @@ jobs:
       run: make -C source clean all
     - name: Execute
       run: ./nesasm --help
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: nesasm_linux
+        path: .
 
   build-macos:
     runs-on: macos-latest
@@ -30,6 +35,11 @@ jobs:
       run: make -C source clean all
     - name: Execute
       run: ./nesasm --help
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: nesasm_macos
+        path: .
 
   build-windows:
     runs-on: windows-latest
@@ -51,3 +61,8 @@ jobs:
       run: make -C source clean all
     - name: Execute
       run: ./nesasm.exe --help
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: nesasm_windows
+        path: .
