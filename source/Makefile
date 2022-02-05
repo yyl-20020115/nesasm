@@ -15,7 +15,11 @@ EXEDIR		?= ..
 PREFIX		?= /usr
 BINDIR		?= $(PREFIX)/bin
 
-PROGRAM		?= nesasm
+ifeq ($(OS),Windows_NT)
+  PROGRAM  = $(EXEDIR)/nesasm.exe
+else
+  PROGRAM  = $(EXEDIR)/nesasm
+endif
 
 ifeq ($(COMMIT),)
   COMMIT = $(shell git rev-parse --short HEAD)
