@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v2.0.0
     - name: make clean all
       run: make -C source clean all
-    - name: execute
+    - name: Execute
       run: ./nesasm --help
 
   build-macos:
@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v2.0.0
     - name: make clean all
       run: make -C source clean all
-    - name: execute
+    - name: Execute
       run: ./nesasm --help
 
   build-windows:
@@ -49,5 +49,5 @@ jobs:
       uses: actions/checkout@v2
     - name: make clean all
       run: make -C source clean all
-    - name: execute
-      run: nesasm.exe --help
+    - name: Execute
+      run: ./nesasm.exe --help

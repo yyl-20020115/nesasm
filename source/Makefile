@@ -9,7 +9,6 @@ COMMIT_INFO	= commit.h
 
 EXTRA_CFLAGS	?= -O2 -Wall -Wno-restrict -Wno-unknown-warning-option
 CFLAGS		+= ${EXTRA_CFLAGS} -I.
-LDADD		?= -Wl,--as-needed	
 
 EXEDIR		?= ..
 PREFIX		?= /usr
