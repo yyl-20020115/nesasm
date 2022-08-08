@@ -8,6 +8,21 @@ COMMIT		:=
 COMMIT_INFO	= commit.h
 
 EXTRA_CFLAGS	?= -O2 -Wall -Wno-restrict -Wno-unknown-warning-option
+
+IS_MACARM := 0
+
+# build on macos(arm) support
+ifneq ($(OS),Windows_NT)
+     UNAME_S := $(shell uname -s)
+     ifeq ($(UNAME_S),Darwin)
+         UNAME_P := $(shell uname -p)
+         ifneq ($(filter arm%,$(UNAME_P)),)
+             EXTRA_CFLAGS += -I$(shell brew --prefix)/include
+             IS_MACARM = 1
+         endif
+     endif
+endif
+
 CFLAGS		+= ${EXTRA_CFLAGS} -I.
 
 EXEDIR		?= ..
@@ -33,6 +48,11 @@ else
      UNAME_S := $(shell uname -s)
            ifeq ($(UNAME_S),Darwin)
              LDFLAGS += -largp
+
+             # build on macos(arm) support
+             ifeq ($(IS_MACARM), 1)
+                 LDFLAGS += -L$(shell brew --prefix)/lib
+             endif
            endif
 endif
 
