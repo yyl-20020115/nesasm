@@ -1,4 +1,4 @@
-name: Build
+name: Build test
 
 on:
   push:
@@ -68,7 +68,7 @@ jobs:
           git
           libargp-devel
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: make clean all
       run: make -C source clean all
     - name: Upload artifact
