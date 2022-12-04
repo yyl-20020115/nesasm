@@ -45,9 +45,9 @@
 /* variables */
 unsigned char ipl_buffer[4096];
 char   *in_fname;  /* file names, input */
-char  bin_fname[256];  /* binary */
-char  lst_fname[256];  /* listing */
-char  sym_fname[256];  /* symbols */
+char  bin_fname[1024];  /* binary */
+char  lst_fname[1024];  /* listing */
+char  sym_fname[1024];  /* symbols */
 FILE *in_fp;  /* file pointers, input */
 FILE *lst_fp;  /* listing */
 char  section_name[4][8] = { "  ZP", " BSS", "CODE", "DATA" };
