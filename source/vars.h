@@ -1,6 +1,6 @@
-unsigned char rom[128][8192];
-unsigned char map[128][8192];
-char bank_name[128][64];
+unsigned char rom[MAX_BANKS][8192];
+unsigned char map[MAX_BANKS][8192];
+char bank_name[MAX_BANKS][64];
 int  bank_loccnt[4][256];
 int  bank_page[4][256];
 int max_zp;    /* higher used address in zero page */

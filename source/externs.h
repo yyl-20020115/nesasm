@@ -1,6 +1,8 @@
-extern unsigned char rom[128][8192];
-extern unsigned char map[128][8192];
-extern char bank_name[128][64];
+#define MAX_BANKS 4096
+
+extern unsigned char rom[MAX_BANKS][8192];
+extern unsigned char map[MAX_BANKS][8192];
+extern char bank_name[MAX_BANKS][64];
 extern int  bank_loccnt[4][256];
 extern int  bank_page[4][256];
 extern int max_zp;    /* higher used address in zero page */
