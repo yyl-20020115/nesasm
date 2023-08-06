@@ -1,5 +1,3 @@
-#define MAX_BANKS 4096
-
 extern unsigned char rom[MAX_BANKS][8192];
 extern unsigned char map[MAX_BANKS][8192];
 extern char bank_name[MAX_BANKS][64];
