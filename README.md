@@ -275,7 +275,9 @@ Other 'special' parameters can be used, here's a list of all the possible parame
               represent the page index.
 
     DB      - Store one or more data bytes at the current location.
-
+    
+    STR     - Stores a string, the first byte is the length of the string. 
+    
     DW      - Store data words.
 
     BYTE    - Same as DB.
