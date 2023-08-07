@@ -1,5 +1,5 @@
-unsigned char rom[MAX_BANKS][8192];
-unsigned char map[MAX_BANKS][8192];
+unsigned char rom[MAX_BANKS][BANK_SIZE];
+unsigned char map[MAX_BANKS][BANK_SIZE];
 char bank_name[MAX_BANKS][64];
 int  bank_loccnt[4][256];
 int  bank_page[4][256];
