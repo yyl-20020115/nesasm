@@ -361,7 +361,7 @@ do_str(int *ip)
   while (isspace((int)prlnbuf[++(*ip)]));
 
   ip_tmp = *ip;
-  /* get length */
+  /* get string length */
   for (;;) {
     /* ASCII string */
     if (prlnbuf[*ip] == '\"') {
@@ -388,7 +388,7 @@ do_str(int *ip)
           }
         }
 
-        /* update location counter */
+        /* update length counter */
         str_len++;
       }
       ip_tmp++;
@@ -399,10 +399,10 @@ do_str(int *ip)
       if (!evaluate(&ip_tmp, 0))
         return;
 
-      /* update location counter */
+      /* update length counter */
       str_len++;
 
-      /* store byte on last pass */
+      /* check byte on last pass */
       if (pass == LAST_PASS) {
         /* check for overflow */
         if ((value > 0xFF) && (value < 0xFFFFFF80)) {
@@ -419,6 +419,7 @@ do_str(int *ip)
       break;
   }
   
+  /* store string length on first btye */
   if (str_len > 0) {
       putbyte(loccnt, str_len);
       loccnt++;
