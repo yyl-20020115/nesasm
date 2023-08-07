@@ -314,8 +314,8 @@ main(int argc, char **argv)
   }
 
   /* clear the ROM array */
-  memset(rom, zero_fill ? 0 : 0xff, 8192 * 128);
-  memset(map, zero_fill ? 0 : 0xff, 8192 * 128);
+  memset(rom, zero_fill ? 0 : 0xff, sizeof(rom));
+  memset(map, zero_fill ? 0 : 0xff, sizeof(map));
 
   /* fill the instruction hash table */
   addinst(base_inst);
