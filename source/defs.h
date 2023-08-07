@@ -1,4 +1,5 @@
 #define MAX_BANKS 4096
+#define BANK_SIZE 8192
 
 /* path separator */
 #if defined(DJGPP) || defined(MSDOS) || defined(WIN32)
@@ -14,9 +15,9 @@
 #define MACHINE_NES  1
 
 /* reserved bank index */
-#define RESERVED_BANK  (MAX_BANKS - 0x0F)
-#define PROC_BANK      (MAX_BANKS - 0x0F + 1)
-#define GROUP_BANK     (MAX_BANKS - 0x0F + 2)
+#define RESERVED_BANK  (MAX_BANKS - 0x10)
+#define PROC_BANK      (MAX_BANKS - 0x10 + 1)
+#define GROUP_BANK     (MAX_BANKS - 0x10 + 2)
 
 /* tile format for encoder */
 #define CHUNKY_TILE    1
@@ -106,6 +107,7 @@
 #define P_INESBAT  55  // .inesbat
 #define P_INESTIM  56  // .inestim
 #define P_SEQU     57  // .sequ
+#define P_STR      58  // .str
 
 /* symbol flags */
 #define MDEF  3  /* multiply defined */

@@ -15,7 +15,7 @@ char pseudo_flag[] = {
   0x0F, 0x0F, 0x0F, 0x0C, 0x0C, 0x0C, 0x0C, 0x0F, 0x0F, 0x0F, // 30 - 39
   0x0F, 0x0F, 0x0C, 0x0C, 0x0C, 0x04, 0x04, 0x04, 0x04, 0x04, // 40 - 49
   0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, // P_INESPRGRAM - 50, P_INESPRGNVRAM - 51,  P_INESCHRRAM - 52, P_INESCHRNVRAM - 53, P_INESSUBMAP - 54, P_INESBAT - 55, P_INESTIM - 56
-  0x0F // P_SEQU 57
+  0x0C, 0x0F  // P_SEQU 58
 };
 
 
@@ -337,6 +337,180 @@ do_dw(int *ip)
     println();
 }
 
+/* ----
+ * do_str()
+ * ----
+ * .str pseudo
+ */
+
+void
+do_str(int *ip)
+{
+  unsigned char c;
+  unsigned char str_len = 0;
+  int ip_tmp = 0;
+
+  /* define label */
+  labldef(loccnt, 1);
+
+  /* output infos */
+  data_loccnt = loccnt;
+  data_level  = 2;
+
+  /* skip spaces */
+  while (isspace((int)prlnbuf[++(*ip)]));
+
+  ip_tmp = *ip;
+  /* get string length */
+  for (;;) {
+    /* ASCII string */
+    if (prlnbuf[*ip] == '\"') {
+      for (;;) {
+        c = prlnbuf[++(ip_tmp)];
+        if (c == '\"')
+          break;
+        if (c == '\0') {
+          error("Unterminated ASCII string!");
+          return;
+        }
+        if (c == '\\') {
+          c = prlnbuf[++(ip_tmp)];
+          switch(c) {
+          case 'r':
+            c = '\r';
+            break;
+          case 'n':
+            c = '\n';
+            break;
+          case 't':
+            c = '\t';
+            break;
+          }
+        }
+
+        /* update length counter */
+        str_len++;
+      }
+      ip_tmp++;
+    }
+    /* bytes */
+    else {
+      /* get a byte */
+      if (!evaluate(&ip_tmp, 0))
+        return;
+
+      /* update length counter */
+      str_len++;
+
+      /* check byte on last pass */
+      if (pass == LAST_PASS) {
+        /* check for overflow */
+        if ((value > 0xFF) && (value < 0xFFFFFF80)) {
+          error("Overflow error!");
+          return;
+        }
+      }
+    }
+
+    /* check if there's another byte */
+    c = prlnbuf[ip_tmp++];
+
+    if (c != ',')
+      break;
+  }
+  
+  /* store string length on first btye */
+  if (str_len > 0) {
+      putbyte(loccnt, str_len);
+      loccnt++;
+  }
+
+  /* get bytes */
+  for (;;) {
+    /* ASCII string */
+    if (prlnbuf[*ip] == '\"') {
+      for (;;) {
+        c = prlnbuf[++(*ip)];
+        if (c == '\"')
+          break;
+        if (c == '\0') {
+          error("Unterminated ASCII string!");
+          return;
+        }
+        if (c == '\\') {
+          c = prlnbuf[++(*ip)];
+          switch(c) {
+          case 'r':
+            c = '\r';
+            break;
+          case 'n':
+            c = '\n';
+            break;
+          case 't':
+            c = '\t';
+            break;
+          }
+        }
+        /* store char on last pass */
+        if (pass == LAST_PASS)
+          putbyte(loccnt, c);
+
+        /* update location counter */
+        loccnt++;
+      }
+      (*ip)++;
+    }
+    /* bytes */
+    else {
+      /* get a byte */
+      if (!evaluate(ip, 0))
+        return;
+
+      /* update location counter */
+      loccnt++;
+
+      /* store byte on last pass */
+      if (pass == LAST_PASS) {
+        /* check for overflow */
+        if ((value > 0xFF) && (value < 0xFFFFFF80)) {
+          error("Overflow error!");
+          return;
+        }
+
+        /* store byte */
+        putbyte(loccnt - 1, value);
+      }
+    }
+
+    /* check if there's another byte */
+    c = prlnbuf[(*ip)++];
+
+    if (c != ',')
+      break;
+  }
+
+  /* check error */
+  if (c != ';' && c != '\0') {
+    error("Syntax error!");
+    return;
+  }
+
+  /* size */
+  if (lablptr) {
+    lablptr->data_type = P_DB;
+    lablptr->data_size = loccnt - data_loccnt;
+  }
+  else {
+    if (lastlabl) {
+      if (lastlabl->data_type == P_DB)
+        lastlabl->data_size += loccnt - data_loccnt;
+    }
+  }
+
+  /* output line */
+  if (pass == LAST_PASS)
+    println();
+}
 
 /* ----
  * do_equ()

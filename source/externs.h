@@ -1,5 +1,5 @@
-extern unsigned char rom[MAX_BANKS][8192];
-extern unsigned char map[MAX_BANKS][8192];
+extern unsigned char rom[MAX_BANKS][BANK_SIZE];
+extern unsigned char map[MAX_BANKS][BANK_SIZE];
 extern char bank_name[MAX_BANKS][64];
 extern int  bank_loccnt[4][256];
 extern int  bank_page[4][256];
