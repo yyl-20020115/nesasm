@@ -107,6 +107,7 @@
 #define P_INESBAT  55  // .inesbat
 #define P_INESTIM  56  // .inestim
 #define P_SEQU     57  // .sequ
+#define P_STR      58  // .str
 
 /* symbol flags */
 #define MDEF  3  /* multiply defined */

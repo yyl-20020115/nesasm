@@ -30,6 +30,7 @@ void do_mlist(int *ip);
 void do_nolist(int *ip);
 void do_nomlist(int *ip);
 void do_db(int *ip);
+void do_str(int *ip);
 void do_dw(int *ip);
 void do_equ(int *ip);
 void do_sequ(int *ip);
