@@ -87,6 +87,7 @@ static struct argp_option options[] = {
   { "listing-file", 'L', "<file.lst>", 0, "Name of the listing file" },
   { "warnings", 'W', 0, 0, "Show overflow warnings" },
   { "output", 'o', "<file.nes>", 0, "Name of the output file, use '-' for stdout" },
+  { "zero-fill", 'z', 0, 0, "Fill unused space in ROM with zeroes" },
   { 0 }
 };
 
@@ -165,6 +166,8 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case 'S':
       dump_seg = 2;
       break;
+    case 'z':
+      zero_fill=1;
     case 'i':
       list_opt = 1;
       break;
@@ -261,6 +264,8 @@ main(int argc, char **argv)
 
   /* parse command line */
   argp_parse(&argp, argc, argv, 0, 0, 0);
+
+  if (zero_fill==1) dump_seg = 0; // disable segment info as zero filling makes it inaccurate
 
   /* search file extension */
   char basename[strlen(in_fname)+1];
