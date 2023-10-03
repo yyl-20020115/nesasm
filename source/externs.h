@@ -1,8 +1,8 @@
 extern unsigned char rom[MAX_BANKS][BANK_SIZE];
 extern unsigned char map[MAX_BANKS][BANK_SIZE];
 extern char bank_name[MAX_BANKS][64];
-extern int  bank_loccnt[4][256];
-extern int  bank_page[4][256];
+extern int  bank_loccnt[4][MAX_BANKS];
+extern int  bank_page[4][MAX_BANKS];
 extern int max_zp;    /* higher used address in zero page */
 extern int max_bss;    /* higher used address in ram */
 extern int max_bank;  /* last bank used */
@@ -54,7 +54,7 @@ extern struct t_symbol *hash_tbl[256];  /* label hash table */
 extern struct t_symbol *lablptr;  /* label pointer into symbol table */
 extern struct t_symbol *glablptr;  /* pointer to the latest defined global symbol */
 extern struct t_symbol *lastlabl;  /* last label we have seen */
-extern struct t_symbol *bank_glabl[4][256];  /* latest global label in each bank */
+extern struct t_symbol *bank_glabl[4][MAX_BANKS];  /* latest global label in each bank */
 extern char hex[];    /* hexadecimal character buffer */
 extern int  stop_pass;  /* stop the program; set by fatal_error() */
 extern int  errcnt;    /* error counter */

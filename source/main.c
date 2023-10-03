@@ -434,7 +434,7 @@ main(int argc, char **argv)
 
     /* reset bank arrays */
     for (i = 0; i < 4; i++) {
-      for (j = 0; j < 256; j++) {
+      for (j = 0; j < MAX_BANKS; j++) {
         bank_loccnt[i][j] = 0;
         bank_glabl[i][j]  = NULL;
         bank_page[i][j]   = 0;

@@ -1,8 +1,8 @@
 unsigned char rom[MAX_BANKS][BANK_SIZE];
 unsigned char map[MAX_BANKS][BANK_SIZE];
 char bank_name[MAX_BANKS][64];
-int  bank_loccnt[4][256];
-int  bank_page[4][256];
+int  bank_loccnt[4][MAX_BANKS];
+int  bank_page[4][MAX_BANKS];
 int max_zp;    /* higher used address in zero page */
 int max_bss;  /* higher used address in ram */
 int max_bank;  /* last bank used */
@@ -26,7 +26,7 @@ struct t_symbol  *hash_tbl[256];  /* label hash table */
 struct t_symbol  *lablptr;  /* label pointer into symbol table */
 struct t_symbol  *glablptr;  /* pointer to the latest defined global label */
 struct t_symbol  *lastlabl;  /* last label we have seen */
-struct t_symbol  *bank_glabl[4][256];  /* latest global symbol for each bank */
+struct t_symbol  *bank_glabl[4][MAX_BANKS];  /* latest global symbol for each bank */
 char hex[5];      /* hexadecimal character buffer */
 void (*opproc)(int *);  /* instruction gen proc */
 int  opflg;    /* instruction flags */
