@@ -406,8 +406,8 @@ main(int argc, char **argv)
   max_zp = 0x01;
   max_bss = 0x0201;
   max_bank = 0;
-  rom_limit = 94347264;    /* 0xEFF * 0x4000 + 0xEFF * 0x2000 */
-  bank_limit = 0x2CFC;    /* (0xEFF * 0x4000 + 0xEFF * 0x2000) / 0x2000 - 1 */
+  rom_limit = MAX_BANKS * BANK_SIZE;
+  bank_limit = MAX_BANKS * BANK_SIZE / 0x2000 - 1;
   bank_base = 0;
   errcnt = 0;
 
