@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: make clean all x64
       run: make -C source clean all
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nesasm_linux_x64
         path: .
@@ -28,14 +28,14 @@ jobs:
     - name: make clean all arm
       run: make -C source clean all CC=arm-linux-gnueabihf-gcc
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nesasm_linux_arm
         path: .
     - name: make clean all arm64
       run: make -C source clean all CC=aarch64-linux-gnu-gcc
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nesasm_linux_arm64
         path: .
@@ -46,11 +46,11 @@ jobs:
     - name: Install argp
       run: brew install argp-standalone
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: make clean all
       run: make -C source clean all
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nesasm_macos
         path: .
@@ -70,11 +70,11 @@ jobs:
           git
           libargp-devel
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: make clean all
       run: make -C source clean all
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nesasm_windows
         path: .
