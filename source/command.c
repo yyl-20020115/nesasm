@@ -28,66 +28,66 @@ char pseudo_flag[] = {
  */
 
 void
-do_pseudo(int *ip)
+do_pseudo(int* ip)
 {
-  char str[80];
-  int old_bank;
-  int size;
+	char str[80];
+	int old_bank;
+	int size;
 
-  /* check if the directive is allowed in the current section */
-  if (!(pseudo_flag[opval] & (1 << section)))
-    fatal_error("Directive not allowed in the current section!");
+	/* check if the directive is allowed in the current section */
+	if (!(pseudo_flag[opval] & (1 << section)))
+		fatal_error("Directive not allowed in the current section!");
 
-  /* save current location */
-  old_bank = bank;
+	/* save current location */
+	old_bank = bank;
 
-  /* execute directive */
-  opproc(ip);
+	/* execute directive */
+	opproc(ip);
 
-  /* reset last label pointer */
-  switch (opval) {
-  case P_VRAM:
-  case P_PAL:
-    break;
+	/* reset last label pointer */
+	switch (opval) {
+	case P_VRAM:
+	case P_PAL:
+		break;
 
-  case P_DB:
-  case P_DW:
-    if (lastlabl) {
-      if(lastlabl->data_type != P_DB)
-          lastlabl = NULL;
-    }
-    break;
+	case P_DB:
+	case P_DW:
+		if (lastlabl) {
+			if (lastlabl->data_type != P_DB)
+				lastlabl = NULL;
+		}
+		break;
 
-  default:
-    if (lastlabl) {
-      if(lastlabl->data_type != opval)
-          lastlabl = NULL;
-    }
-    break;
-  }
+	default:
+		if (lastlabl) {
+			if (lastlabl->data_type != opval)
+				lastlabl = NULL;
+		}
+		break;
+	}
 
-  /* bank overflow warning */
-  if (pass == LAST_PASS) {
-    if (asm_opt[OPT_WARNING]) {
-      switch (opval) {
-      case P_INCBIN:
-      case P_INCCHR:
-      case P_INCSPR:
-      case P_INCPAL:
-      case P_INCBAT:
-      case P_INCTILE:
-      case P_INCMAP:
-        if (bank != old_bank) {
-          size = ((bank - old_bank - 1) * 8192) + loccnt;
-          if (size) {
-            sprintf(str, "Warning, bank overflow by %i bytes!\n", size);
-            warning(str);
-          }
-        }
-        break;
-      }
-    }
-  }
+	/* bank overflow warning */
+	if (pass == LAST_PASS) {
+		if (asm_opt[OPT_WARNING]) {
+			switch (opval) {
+			case P_INCBIN:
+			case P_INCCHR:
+			case P_INCSPR:
+			case P_INCPAL:
+			case P_INCBAT:
+			case P_INCTILE:
+			case P_INCMAP:
+				if (bank != old_bank) {
+					size = ((bank - old_bank - 1) * 8192) + loccnt;
+					if (size) {
+						sprintf(str, "Warning, bank overflow by %i bytes!\n", size);
+						warning(str);
+					}
+				}
+				break;
+			}
+		}
+	}
 }
 
 
@@ -98,14 +98,14 @@ do_pseudo(int *ip)
  */
 
 void
-do_list(int *ip)
+do_list(int* ip)
 {
-  /* check end of line */
-  if (!check_eol(ip))
-    return;
+	/* check end of line */
+	if (!check_eol(ip))
+		return;
 
-  asm_opt[OPT_LIST] = 1;
-  xlist = 1;
+	asm_opt[OPT_LIST] = 1;
+	xlist = 1;
 }
 
 
@@ -116,13 +116,13 @@ do_list(int *ip)
  */
 
 void
-do_mlist(int *ip)
+do_mlist(int* ip)
 {
-  /* check end of line */
-  if (!check_eol(ip))
-    return;
+	/* check end of line */
+	if (!check_eol(ip))
+		return;
 
-  asm_opt[OPT_MACRO] = 1;
+	asm_opt[OPT_MACRO] = 1;
 }
 
 
@@ -133,13 +133,13 @@ do_mlist(int *ip)
  */
 
 void
-do_nolist(int *ip)
+do_nolist(int* ip)
 {
-  /* check end of line */
-  if (!check_eol(ip))
-    return;
+	/* check end of line */
+	if (!check_eol(ip))
+		return;
 
-  asm_opt[OPT_LIST] = 0;
+	asm_opt[OPT_LIST] = 0;
 }
 
 
@@ -150,13 +150,13 @@ do_nolist(int *ip)
  */
 
 void
-do_nomlist(int *ip)
+do_nomlist(int* ip)
 {
-  /* check end of line */
-  if (!check_eol(ip))
-    return;
+	/* check end of line */
+	if (!check_eol(ip))
+		return;
 
-  asm_opt[OPT_MACRO] = mlist_opt;
+	asm_opt[OPT_MACRO] = mlist_opt;
 }
 
 
@@ -167,105 +167,105 @@ do_nomlist(int *ip)
  */
 
 void
-do_db(int *ip)
+do_db(int* ip)
 {
-  unsigned char c;
+	unsigned char c;
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* output infos */
-  data_loccnt = loccnt;
-  data_level  = 2;
+	/* output infos */
+	data_loccnt = loccnt;
+	data_level = 2;
 
-  /* skip spaces */
-  while (isspace((int)prlnbuf[++(*ip)]));
+	/* skip spaces */
+	while (isspace((int)prlnbuf[++(*ip)]));
 
-  /* get bytes */
-  for (;;) {
-    /* ASCII string */
-    if (prlnbuf[*ip] == '\"') {
-      for (;;) {
-        c = prlnbuf[++(*ip)];
-        if (c == '\"')
-          break;
-        if (c == '\0') {
-          error("Unterminated ASCII string!");
-          return;
-        }
-        if (c == '\\') {
-          c = prlnbuf[++(*ip)];
-          switch(c) {
-          case 'r':
-            c = '\r';
-            break;
-          case 'n':
-            c = '\n';
-            break;
-          case 't':
-            c = '\t';
-            break;
-          }
-        }
-        /* store char on last pass */
-        if (pass == LAST_PASS)
-          putbyte(loccnt, c);
+	/* get bytes */
+	for (;;) {
+		/* ASCII string */
+		if (prlnbuf[*ip] == '\"') {
+			for (;;) {
+				c = prlnbuf[++(*ip)];
+				if (c == '\"')
+					break;
+				if (c == '\0') {
+					error("Unterminated ASCII string!");
+					return;
+				}
+				if (c == '\\') {
+					c = prlnbuf[++(*ip)];
+					switch (c) {
+					case 'r':
+						c = '\r';
+						break;
+					case 'n':
+						c = '\n';
+						break;
+					case 't':
+						c = '\t';
+						break;
+					}
+				}
+				/* store char on last pass */
+				if (pass == LAST_PASS)
+					putbyte(loccnt, c);
 
-        /* update location counter */
-        loccnt++;
-      }
-      (*ip)++;
-    }
-    /* bytes */
-    else {
-      /* get a byte */
-      if (!evaluate(ip, 0))
-        return;
+				/* update location counter */
+				loccnt++;
+			}
+			(*ip)++;
+		}
+		/* bytes */
+		else {
+			/* get a byte */
+			if (!evaluate(ip, 0))
+				return;
 
-      /* update location counter */
-      loccnt++;
+			/* update location counter */
+			loccnt++;
 
-      /* store byte on last pass */
-      if (pass == LAST_PASS) {
-        /* check for overflow */
-        if ((value > 0xFF) && (value < 0xFFFFFF80)) {
-          error("Overflow error!");
-          return;
-        }
+			/* store byte on last pass */
+			if (pass == LAST_PASS) {
+				/* check for overflow */
+				if ((value > 0xFF) && (value < 0xFFFFFF80)) {
+					error("Overflow error!");
+					return;
+				}
 
-        /* store byte */
-        putbyte(loccnt - 1, value);
-      }
-    }
+				/* store byte */
+				putbyte(loccnt - 1, value);
+			}
+		}
 
-    /* check if there's another byte */
-    c = prlnbuf[(*ip)++];
+		/* check if there's another byte */
+		c = prlnbuf[(*ip)++];
 
-    if (c != ',')
-      break;
-  }
+		if (c != ',')
+			break;
+	}
 
-  /* check error */
-  if (c != ';' && c != '\0') {
-    error("Syntax error!");
-    return;
-  }
+	/* check error */
+	if (c != ';' && c != '\0') {
+		error("Syntax error!");
+		return;
+	}
 
-  /* size */
-  if (lablptr) {
-    lablptr->data_type = P_DB;
-    lablptr->data_size = loccnt - data_loccnt;
-  }
-  else {
-    if (lastlabl) {
-      if (lastlabl->data_type == P_DB)
-        lastlabl->data_size += loccnt - data_loccnt;
-    }
-  }
+	/* size */
+	if (lablptr) {
+		lablptr->data_type = P_DB;
+		lablptr->data_size = loccnt - data_loccnt;
+	}
+	else {
+		if (lastlabl) {
+			if (lastlabl->data_type == P_DB)
+				lastlabl->data_size += loccnt - data_loccnt;
+		}
+	}
 
-  /* output line */
-  if (pass == LAST_PASS)
-    println();
+	/* output line */
+	if (pass == LAST_PASS)
+		println();
 }
 
 
@@ -276,67 +276,67 @@ do_db(int *ip)
  */
 
 void
-do_dw(int *ip)
+do_dw(int* ip)
 {
-  char c;
+	char c;
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* output infos */
-  data_loccnt = loccnt;
-  data_size   = 2;
-  data_level  = 2;
+	/* output infos */
+	data_loccnt = loccnt;
+	data_size = 2;
+	data_level = 2;
 
-  /* get data */
-  for (;;) {
-    /* get a word */
-    if (!evaluate(ip, 0))
-      return;
+	/* get data */
+	for (;;) {
+		/* get a word */
+		if (!evaluate(ip, 0))
+			return;
 
-    /* update location counter */
-    loccnt += 2;
+		/* update location counter */
+		loccnt += 2;
 
-    /* store word on last pass */
-    if (pass == LAST_PASS) {
-      /* check for overflow */
-      if ((value > 0xFFFF) && (value < 0xFFFF8000)) {
-        error("Overflow error!");
-        return;
-      }
+		/* store word on last pass */
+		if (pass == LAST_PASS) {
+			/* check for overflow */
+			if ((value > 0xFFFF) && (value < 0xFFFF8000)) {
+				error("Overflow error!");
+				return;
+			}
 
-      /* store word */
-      putword(loccnt-2, value);
-    }
+			/* store word */
+			putword(loccnt - 2, value);
+		}
 
-    /* check if there's another word */
-    c = prlnbuf[(*ip)++];
+		/* check if there's another word */
+		c = prlnbuf[(*ip)++];
 
-    if (c != ',')
-      break;
-  }
+		if (c != ',')
+			break;
+	}
 
-  /* check error */
-  if (c != ';' && c != '\0') {
-    error("Syntax error!");
-    return;
-  }
+	/* check error */
+	if (c != ';' && c != '\0') {
+		error("Syntax error!");
+		return;
+	}
 
-  /* size */
-  if (lablptr) {
-    lablptr->data_type = P_DB;
-    lablptr->data_size = loccnt - data_loccnt;
-  }
-  else {
-    if (lastlabl) {
-      if (lastlabl->data_type == P_DB)
-        lastlabl->data_size += loccnt - data_loccnt;
-    }
-  }
+	/* size */
+	if (lablptr) {
+		lablptr->data_type = P_DB;
+		lablptr->data_size = loccnt - data_loccnt;
+	}
+	else {
+		if (lastlabl) {
+			if (lastlabl->data_type == P_DB)
+				lastlabl->data_size += loccnt - data_loccnt;
+		}
+	}
 
-  /* output line */
-  if (pass == LAST_PASS)
-    println();
+	/* output line */
+	if (pass == LAST_PASS)
+		println();
 }
 
 /* ----
@@ -346,172 +346,172 @@ do_dw(int *ip)
  */
 
 void
-do_str(int *ip)
+do_str(int* ip)
 {
-  unsigned char c;
-  unsigned char str_len = 0;
-  int ip_tmp = 0;
+	unsigned char c;
+	unsigned char str_len = 0;
+	int ip_tmp = 0;
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* output infos */
-  data_loccnt = loccnt;
-  data_level  = 2;
+	/* output infos */
+	data_loccnt = loccnt;
+	data_level = 2;
 
-  /* skip spaces */
-  while (isspace((int)prlnbuf[++(*ip)]));
+	/* skip spaces */
+	while (isspace((int)prlnbuf[++(*ip)]));
 
-  ip_tmp = *ip;
-  /* get string length */
-  for (;;) {
-    /* ASCII string */
-    if (prlnbuf[*ip] == '\"') {
-      for (;;) {
-        c = prlnbuf[++(ip_tmp)];
-        if (c == '\"')
-          break;
-        if (c == '\0') {
-          error("Unterminated ASCII string!");
-          return;
-        }
-        if (c == '\\') {
-          c = prlnbuf[++(ip_tmp)];
-          switch(c) {
-          case 'r':
-            c = '\r';
-            break;
-          case 'n':
-            c = '\n';
-            break;
-          case 't':
-            c = '\t';
-            break;
-          }
-        }
+	ip_tmp = *ip;
+	/* get string length */
+	for (;;) {
+		/* ASCII string */
+		if (prlnbuf[*ip] == '\"') {
+			for (;;) {
+				c = prlnbuf[++(ip_tmp)];
+				if (c == '\"')
+					break;
+				if (c == '\0') {
+					error("Unterminated ASCII string!");
+					return;
+				}
+				if (c == '\\') {
+					c = prlnbuf[++(ip_tmp)];
+					switch (c) {
+					case 'r':
+						c = '\r';
+						break;
+					case 'n':
+						c = '\n';
+						break;
+					case 't':
+						c = '\t';
+						break;
+					}
+				}
 
-        /* update length counter */
-        str_len++;
-      }
-      ip_tmp++;
-    }
-    /* bytes */
-    else {
-      /* get a byte */
-      if (!evaluate(&ip_tmp, 0))
-        return;
+				/* update length counter */
+				str_len++;
+			}
+			ip_tmp++;
+		}
+		/* bytes */
+		else {
+			/* get a byte */
+			if (!evaluate(&ip_tmp, 0))
+				return;
 
-      /* update length counter */
-      str_len++;
+			/* update length counter */
+			str_len++;
 
-      /* check byte on last pass */
-      if (pass == LAST_PASS) {
-        /* check for overflow */
-        if ((value > 0xFF) && (value < 0xFFFFFF80)) {
-          error("Overflow error!");
-          return;
-        }
-      }
-    }
+			/* check byte on last pass */
+			if (pass == LAST_PASS) {
+				/* check for overflow */
+				if ((value > 0xFF) && (value < 0xFFFFFF80)) {
+					error("Overflow error!");
+					return;
+				}
+			}
+		}
 
-    /* check if there's another byte */
-    c = prlnbuf[ip_tmp++];
+		/* check if there's another byte */
+		c = prlnbuf[ip_tmp++];
 
-    if (c != ',')
-      break;
-  }
-  
-  /* store string length on first btye */
-  if (str_len > 0) {
-      putbyte(loccnt, str_len);
-      loccnt++;
-  }
+		if (c != ',')
+			break;
+	}
 
-  /* get bytes */
-  for (;;) {
-    /* ASCII string */
-    if (prlnbuf[*ip] == '\"') {
-      for (;;) {
-        c = prlnbuf[++(*ip)];
-        if (c == '\"')
-          break;
-        if (c == '\0') {
-          error("Unterminated ASCII string!");
-          return;
-        }
-        if (c == '\\') {
-          c = prlnbuf[++(*ip)];
-          switch(c) {
-          case 'r':
-            c = '\r';
-            break;
-          case 'n':
-            c = '\n';
-            break;
-          case 't':
-            c = '\t';
-            break;
-          }
-        }
-        /* store char on last pass */
-        if (pass == LAST_PASS)
-          putbyte(loccnt, c);
+	/* store string length on first btye */
+	if (str_len > 0) {
+		putbyte(loccnt, str_len);
+		loccnt++;
+	}
 
-        /* update location counter */
-        loccnt++;
-      }
-      (*ip)++;
-    }
-    /* bytes */
-    else {
-      /* get a byte */
-      if (!evaluate(ip, 0))
-        return;
+	/* get bytes */
+	for (;;) {
+		/* ASCII string */
+		if (prlnbuf[*ip] == '\"') {
+			for (;;) {
+				c = prlnbuf[++(*ip)];
+				if (c == '\"')
+					break;
+				if (c == '\0') {
+					error("Unterminated ASCII string!");
+					return;
+				}
+				if (c == '\\') {
+					c = prlnbuf[++(*ip)];
+					switch (c) {
+					case 'r':
+						c = '\r';
+						break;
+					case 'n':
+						c = '\n';
+						break;
+					case 't':
+						c = '\t';
+						break;
+					}
+				}
+				/* store char on last pass */
+				if (pass == LAST_PASS)
+					putbyte(loccnt, c);
 
-      /* update location counter */
-      loccnt++;
+				/* update location counter */
+				loccnt++;
+			}
+			(*ip)++;
+		}
+		/* bytes */
+		else {
+			/* get a byte */
+			if (!evaluate(ip, 0))
+				return;
 
-      /* store byte on last pass */
-      if (pass == LAST_PASS) {
-        /* check for overflow */
-        if ((value > 0xFF) && (value < 0xFFFFFF80)) {
-          error("Overflow error!");
-          return;
-        }
+			/* update location counter */
+			loccnt++;
 
-        /* store byte */
-        putbyte(loccnt - 1, value);
-      }
-    }
+			/* store byte on last pass */
+			if (pass == LAST_PASS) {
+				/* check for overflow */
+				if ((value > 0xFF) && (value < 0xFFFFFF80)) {
+					error("Overflow error!");
+					return;
+				}
 
-    /* check if there's another byte */
-    c = prlnbuf[(*ip)++];
+				/* store byte */
+				putbyte(loccnt - 1, value);
+			}
+		}
 
-    if (c != ',')
-      break;
-  }
+		/* check if there's another byte */
+		c = prlnbuf[(*ip)++];
 
-  /* check error */
-  if (c != ';' && c != '\0') {
-    error("Syntax error!");
-    return;
-  }
+		if (c != ',')
+			break;
+	}
 
-  /* size */
-  if (lablptr) {
-    lablptr->data_type = P_DB;
-    lablptr->data_size = loccnt - data_loccnt;
-  }
-  else {
-    if (lastlabl) {
-      if (lastlabl->data_type == P_DB)
-        lastlabl->data_size += loccnt - data_loccnt;
-    }
-  }
+	/* check error */
+	if (c != ';' && c != '\0') {
+		error("Syntax error!");
+		return;
+	}
 
-  /* output line */
-  if (pass == LAST_PASS)
-    println();
+	/* size */
+	if (lablptr) {
+		lablptr->data_type = P_DB;
+		lablptr->data_size = loccnt - data_loccnt;
+	}
+	else {
+		if (lastlabl) {
+			if (lastlabl->data_type == P_DB)
+				lastlabl->data_size += loccnt - data_loccnt;
+		}
+	}
+
+	/* output line */
+	if (pass == LAST_PASS)
+		println();
 }
 
 /* ----
@@ -521,21 +521,21 @@ do_str(int *ip)
  */
 
 void
-do_equ(int *ip)
+do_equ(int* ip)
 {
-  /* get value */
-  if (!evaluate(ip, ';'))
-    return;
+	/* get value */
+	if (!evaluate(ip, ';'))
+		return;
 
-  /* assign value to the label */
-  lablptr->equ = 1;
-  labldef(value, 0);
+	/* assign value to the label */
+	lablptr->equ = 1;
+	labldef(value, 0);
 
-  /* output line */
-  if (pass == LAST_PASS) {
-    loadlc(value, 1);
-    println();
-  }
+	/* output line */
+	if (pass == LAST_PASS) {
+		loadlc(value, 1);
+		println();
+	}
 }
 
 
@@ -546,30 +546,30 @@ do_equ(int *ip)
  */
 
 void
-do_sequ(int *ip)
+do_sequ(int* ip)
 {
-  char str[128];
+	char str[128];
 
-  /* get value */
-  if (!getstring(ip, str, sizeof(str) - 1))
-    return;
+	/* get value */
+	if (!getstring(ip, str, sizeof(str) - 1))
+		return;
 
-  /* assign value to the label */
-  lablptr->equ = 1;
-  if (!labldef(-1, 0))
-  {
-    lablptr->type = DEFSTR;
-    lablptr->str_value = malloc(strlen(str) + 1);
-    strcpy((char*)lablptr->str_value, str);
-  }
-  else {
-    return;
-  }
+	/* assign value to the label */
+	lablptr->equ = 1;
+	if (!labldef(-1, 0))
+	{
+		lablptr->type = DEFSTR;
+		lablptr->str_value = malloc(strlen(str) + 1);
+		strcpy((char*)lablptr->str_value, str);
+	}
+	else {
+		return;
+	}
 
-  /* output line */
-  if (pass == LAST_PASS) {
-    println();
-  }
+	/* output line */
+	if (pass == LAST_PASS) {
+		println();
+	}
 }
 
 
@@ -580,31 +580,31 @@ do_sequ(int *ip)
  */
 
 void
-do_page(int *ip)
+do_page(int* ip)
 {
-  /* not allowed in procs */
-  if (proc_ptr) {
-    fatal_error("PAGE can not be changed in procs!");
-    return;
-  }
+	/* not allowed in procs */
+	if (proc_ptr) {
+		fatal_error("PAGE can not be changed in procs!");
+		return;
+	}
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* get page index */
-  if (!evaluate(ip, ';'))
-    return;
-  if (value > 7) {
-    error("Invalid page index!");
-    return;
-  }
-  page = value;
+	/* get page index */
+	if (!evaluate(ip, ';'))
+		return;
+	if (value > 7) {
+		error("Invalid page index!");
+		return;
+	}
+	page = value;
 
-  /* output line */
-  if (pass == LAST_PASS) {
-    loadlc(value << 13, 1);
-    println();
-  }
+	/* output line */
+	if (pass == LAST_PASS) {
+		loadlc(value << 13, 1);
+		println();
+	}
 }
 
 
@@ -615,64 +615,64 @@ do_page(int *ip)
  */
 
 void
-do_org(int *ip)
+do_org(int* ip)
 {
-  /* get the .org value */
-  if (!evaluate(ip, ';'))
-    return;
+	/* get the .org value */
+	if (!evaluate(ip, ';'))
+		return;
 
-  /* check for undefined symbol - they are not allowed in .org */
-  if (undef != 0) {
-    error("Undefined symbol in operand field!");
-    return;
-  }
+	/* check for undefined symbol - they are not allowed in .org */
+	if (undef != 0) {
+		error("Undefined symbol in operand field!");
+		return;
+	}
 
-  /* section switch */
-  switch (section) {
-  case S_ZP:
-    /* zero page section */
-    if ((value & 0xFFFFFF00) && ((value & 0xFFFFFF00) != machine->ram_base)) {
-      error("Invalid address!");
-      return;
-    }
-    break;
+	/* section switch */
+	switch (section) {
+	case S_ZP:
+		/* zero page section */
+		if ((value & 0xFFFFFF00) && ((value & 0xFFFFFF00) != machine->ram_base)) {
+			error("Invalid address!");
+			return;
+		}
+		break;
 
-  case S_BSS:
-    /* ram section */
-    if ((value < machine->ram_base) || (value >= (machine->ram_base + machine->ram_limit))) {
-      error("Invalid address!");
-      return;
-    }
-    break;
+	case S_BSS:
+		/* ram section */
+		if ((value < machine->ram_base) || (value >= (machine->ram_base + machine->ram_limit))) {
+			error("Invalid address!");
+			return;
+		}
+		break;
 
-  case S_CODE:
-  case S_DATA:
-    /* not allowed in procs */
-    if (proc_ptr) {
-      fatal_error("ORG can not be changed in procs!");
-      return;
-    }
+	case S_CODE:
+	case S_DATA:
+		/* not allowed in procs */
+		if (proc_ptr) {
+			fatal_error("ORG can not be changed in procs!");
+			return;
+		}
 
-    /* code and data section */
-    if (value & 0xFFFF0000) {
-      error("Invalid address!");
-      return;
-    }
-    page = (value >> 13) & 0x07;
-    break;
-  }
+		/* code and data section */
+		if (value & 0xFFFF0000) {
+			error("Invalid address!");
+			return;
+		}
+		page = (value >> 13) & 0x07;
+		break;
+	}
 
-  /* set location counter */
-  loccnt = (value & 0x1FFF);
+	/* set location counter */
+	loccnt = (value & 0x1FFF);
 
-  /* set label value if there was one */
-  labldef(loccnt, 1);
+	/* set label value if there was one */
+	labldef(loccnt, 1);
 
-  /* output line on last pass */
-  if (pass == LAST_PASS) {
-    loadlc(value, 1);
-    println();
-  }
+	/* output line on last pass */
+	if (pass == LAST_PASS) {
+		loadlc(value, 1);
+		println();
+	}
 }
 
 
@@ -683,82 +683,82 @@ do_org(int *ip)
  */
 
 void
-do_bank(int *ip)
+do_bank(int* ip)
 {
-  char name[128];
+	char name[128];
 
-  /* not allowed in procs */
-  if (proc_ptr) {
-    fatal_error("Bank can not be changed in procs!");
-    return;
-  }
+	/* not allowed in procs */
+	if (proc_ptr) {
+		fatal_error("Bank can not be changed in procs!");
+		return;
+	}
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* get bank index */
-  if (!evaluate(ip, 0))
-    return;
-  if (value > bank_limit) {
-    error("Bank index out of range!");
-    return;
-  }
+	/* get bank index */
+	if (!evaluate(ip, 0))
+		return;
+	if (value > bank_limit) {
+		error("Bank index out of range!");
+		return;
+	}
 
-  /* check if there's a bank name */
-  switch (prlnbuf[*ip]) {
-  case ';':
-  case '\0':
-    break;
-    
-  case ',':
-    /* get name */
-    (*ip)++;
-    if (!getstring(ip, name, 63))
-      return;
+	/* check if there's a bank name */
+	switch (prlnbuf[*ip]) {
+	case ';':
+	case '\0':
+		break;
 
-    /* check name validity */
-    if (strlen(bank_name[value])) {
-      if (strcasecmp(bank_name[value], name)) {
-        error("Different bank names not allowed!");
-        return;
-      }
-    }
+	case ',':
+		/* get name */
+		(*ip)++;
+		if (!getstring(ip, name, 63))
+			return;
 
-    /* copy name */      
-    strcpy(bank_name[value], name);
+		/* check name validity */
+		if (strlen(bank_name[value])) {
+			if (strcasecmp(bank_name[value], name)) {
+				error("Different bank names not allowed!");
+				return;
+			}
+		}
 
-    /* check end of line */
-    if (!check_eol(ip))
-      return;
+		/* copy name */
+		strcpy(bank_name[value], name);
 
-    /* ok */
-    break;
+		/* check end of line */
+		if (!check_eol(ip))
+			return;
 
-  default:
-    error("Syntax error!");
-    return;
-  }
+		/* ok */
+		break;
 
-  /* backup current bank infos */
-  bank_glabl[section][bank]  = glablptr;
-  bank_loccnt[section][bank] = loccnt;
-  bank_page[section][bank]   = page;
+	default:
+		error("Syntax error!");
+		return;
+	}
 
-  /* get new bank infos */
-  bank     = value;
-  page     = bank_page[section][bank];
-  loccnt   = bank_loccnt[section][bank];
-  glablptr = bank_glabl[section][bank];
+	/* backup current bank infos */
+	bank_glabl[section][bank] = glablptr;
+	bank_loccnt[section][bank] = loccnt;
+	bank_page[section][bank] = page;
 
-  /* update the max bank counter */
-  if (max_bank < bank)
-    max_bank = bank;
+	/* get new bank infos */
+	bank = value;
+	page = bank_page[section][bank];
+	loccnt = bank_loccnt[section][bank];
+	glablptr = bank_glabl[section][bank];
 
-  /* output on last pass */
-  if (pass == LAST_PASS) {
-    loadlc(bank, 1);
-    println();
-  }
+	/* update the max bank counter */
+	if (max_bank < bank)
+		max_bank = bank;
+
+	/* output on last pass */
+	if (pass == LAST_PASS) {
+		loadlc(bank, 1);
+		println();
+	}
 }
 
 
@@ -769,80 +769,80 @@ do_bank(int *ip)
  */
 
 void
-do_incbin(int *ip)
+do_incbin(int* ip)
 {
-  FILE *fp;
-  char fname[256];
-  int  size;
+	FILE* fp;
+	char fname[256];
+	int  size;
 
-  /* get file name */
-  if (!getstring(ip, fname, 255))
-    return;
+	/* get file name */
+	if (!getstring(ip, fname, 255))
+		return;
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* output */
-  if (pass == LAST_PASS)
-    loadlc(loccnt, 0);
+	/* output */
+	if (pass == LAST_PASS)
+		loadlc(loccnt, 0);
 
-  /* open file */
-  if ((fp = open_file(fname, "rb")) == NULL) {
-    fatal_error("Can not open file!");
-    return;
-  }
+	/* open file */
+	if ((fp = open_file(fname, "rb")) == NULL) {
+		fatal_error("Can not open file!");
+		return;
+	}
 
-  /* get file size */
-  fseek(fp, 0, SEEK_END);
-  size = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
+	/* get file size */
+	fseek(fp, 0, SEEK_END);
+	size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
 
-  /* check if it will fit in the rom */
-  if (((bank << 13) + loccnt + size) > rom_limit) {
-    fclose(fp);
-    error("ROM overflow!");
-    return;
-  }
+	/* check if it will fit in the rom */
+	if (((bank << 13) + loccnt + size) > rom_limit) {
+		fclose(fp);
+		error("ROM overflow!");
+		return;
+	}
 
-  /* load data on last pass */
-  if (pass == LAST_PASS) {
-    int readpos = 0;
-    while (readpos < size)
-    {
-      int r = fread(&rom[bank][loccnt]+readpos, 1, size-readpos, fp);
-      if (r <= 0) fatal_error("Can not read file");
-      readpos += r;
-    }
-    memset(&map[bank][loccnt], section + (page << 5), size);
+	/* load data on last pass */
+	if (pass == LAST_PASS) {
+		int readpos = 0;
+		while (readpos < size)
+		{
+			int r = fread(&rom[bank][loccnt] + readpos, 1, size - readpos, fp);
+			if (r <= 0) fatal_error("Can not read file");
+			readpos += r;
+		}
+		memset(&map[bank][loccnt], section + (page << 5), size);
 
-    /* output line */
-    println();
-  }
+		/* output line */
+		println();
+	}
 
-  /* close file */
-  fclose(fp);
+	/* close file */
+	fclose(fp);
 
-  /* update bank and location counters */
-  bank  += (loccnt + size) >> 13;
-  loccnt = (loccnt + size) & 0x1FFF;
-  if (bank > max_bank) {
-    if (loccnt)
-      max_bank = bank;
-    else
-      max_bank = bank - 1;
-  }
+	/* update bank and location counters */
+	bank += (loccnt + size) >> 13;
+	loccnt = (loccnt + size) & 0x1FFF;
+	if (bank > max_bank) {
+		if (loccnt)
+			max_bank = bank;
+		else
+			max_bank = bank - 1;
+	}
 
-  /* size */
-  if (lablptr) {
-    lablptr->data_type = P_INCBIN;
-    lablptr->data_size = size;
-  }
-  else {
-    if (lastlabl) {
-      if (lastlabl->data_type == P_INCBIN)
-        lastlabl->data_size += size;
-    }
-  }
+	/* size */
+	if (lablptr) {
+		lablptr->data_type = P_INCBIN;
+		lablptr->data_size = size;
+	}
+	else {
+		if (lastlabl) {
+			if (lastlabl->data_type == P_INCBIN)
+				lastlabl->data_size += size;
+		}
+	}
 }
 
 
@@ -853,142 +853,142 @@ do_incbin(int *ip)
  */
 
 void
-do_mx(char *fname)
+do_mx(char* fname)
 {
-  FILE *fp;
-  char *ptr;
-  char type;
-  char line[256];
-  unsigned char buffer[128];
-  int data;
-  int flag = 0;
-  int size = 0;
-  int cnt, addr, chksum;
-  int i;
+	FILE* fp;
+	char* ptr;
+	char type;
+	char line[256];
+	unsigned char buffer[128];
+	int data;
+	int flag = 0;
+	int size = 0;
+	int cnt, addr, chksum;
+	int i;
 
-  /* open the file */
-  if ((fp = open_file(fname, "r")) == NULL) {
-    fatal_error("Can not open file!");
-    return;
-  }
+	/* open the file */
+	if ((fp = open_file(fname, "r")) == NULL) {
+		fatal_error("Can not open file!");
+		return;
+	}
 
-  /* read loop */
-  while (fgets(line, 254, fp) != NULL) {
-    if (line[0] == 'S') {
-      /* get record type */
-      type = line[1];
+	/* read loop */
+	while (fgets(line, 254, fp) != NULL) {
+		if (line[0] == 'S') {
+			/* get record type */
+			type = line[1];
 
-      /* error on unsupported records */
-      if ((type != '2') && (type != '8')) {
-        error("Unsupported S-record type!");
-        return;
-      }
+			/* error on unsupported records */
+			if ((type != '2') && (type != '8')) {
+				error("Unsupported S-record type!");
+				return;
+			}
 
-      /* get count and address */
-      cnt  = htoi(&line[2], 2);
-      addr = htoi(&line[4], 6);
+			/* get count and address */
+			cnt = htoi(&line[2], 2);
+			addr = htoi(&line[4], 6);
 
-      if ((strlen(line) < 12) || (cnt < 4) || (addr == -1)) {
-        error("Incorrect S-record line!");
-        return;
-      }
+			if ((strlen(line) < 12) || (cnt < 4) || (addr == -1)) {
+				error("Incorrect S-record line!");
+				return;
+			}
 
-      /* adjust count */
-      cnt -= 4;
+			/* adjust count */
+			cnt -= 4;
 
-      /* checksum */
-      chksum = cnt + ((addr >> 16) & 0xFF) +
-               ((addr >> 8) & 0xFF) +
-               ((addr) & 0xFF) + 4;
+			/* checksum */
+			chksum = cnt + ((addr >> 16) & 0xFF) +
+				((addr >> 8) & 0xFF) +
+				((addr) & 0xFF) + 4;
 
-      /* get data */
-      ptr = &line[10];
+			/* get data */
+			ptr = &line[10];
 
-      for (i = 0; i < cnt; i++) {
-        data = htoi(ptr, 2);
-        buffer[i] = data;
-        chksum += data;
-        ptr += 2;
+			for (i = 0; i < cnt; i++) {
+				data = htoi(ptr, 2);
+				buffer[i] = data;
+				chksum += data;
+				ptr += 2;
 
-        if (data == -1) {
-          error("Syntax error in a S-record line!");
-          return;
-        }
-      }
+				if (data == -1) {
+					error("Syntax error in a S-record line!");
+					return;
+				}
+			}
 
-      /* checksum test */
-      data = htoi(ptr, 2);
-      chksum = (~chksum) & 0xFF;
+			/* checksum test */
+			data = htoi(ptr, 2);
+			chksum = (~chksum) & 0xFF;
 
-      if (data != chksum) {
-        error("Checksum error!");
-        return;
-      }
+			if (data != chksum) {
+				error("Checksum error!");
+				return;
+			}
 
-      /* end record */
-      if (type == '8')
-        break;
+			/* end record */
+			if (type == '8')
+				break;
 
-      /* data record */
-      if (type == '2') {
-        /* set the location counter */
-        if (addr & 0xFFFF0000) {
-          error("Invalid address!");
-          return;
-        }
-        page   = (addr >> 13) & 0x07;
-        loccnt = (addr & 0x1FFF);
+			/* data record */
+			if (type == '2') {
+				/* set the location counter */
+				if (addr & 0xFFFF0000) {
+					error("Invalid address!");
+					return;
+				}
+				page = (addr >> 13) & 0x07;
+				loccnt = (addr & 0x1FFF);
 
-        /* define label */
-        if (flag == 0) {
-          flag  = 1;
-          labldef(loccnt, 1);
+				/* define label */
+				if (flag == 0) {
+					flag = 1;
+					labldef(loccnt, 1);
 
-          /* output */
-          if (pass == LAST_PASS)
-            loadlc(loccnt, 0);
-        }
+					/* output */
+					if (pass == LAST_PASS)
+						loadlc(loccnt, 0);
+				}
 
-        /* copy data */
-        if (pass == LAST_PASS) {
-          for (i = 0; i < cnt; i++)
-            putbyte(loccnt + i, buffer[i]);
-        }
+				/* copy data */
+				if (pass == LAST_PASS) {
+					for (i = 0; i < cnt; i++)
+						putbyte(loccnt + i, buffer[i]);
+				}
 
-        /* update location counter */
-        loccnt += cnt;
-        size   += cnt;
-      }
-    }
-  }
+				/* update location counter */
+				loccnt += cnt;
+				size += cnt;
+			}
+		}
+	}
 
-  /* close file */
-  fclose(fp);
+	/* close file */
+	fclose(fp);
 
-  /* define label */
-  if (flag == 0) {
-    labldef(loccnt, 1);
+	/* define label */
+	if (flag == 0) {
+		labldef(loccnt, 1);
 
-    /* output */
-    if (pass == LAST_PASS)
-      loadlc(loccnt, 0);
-  }
+		/* output */
+		if (pass == LAST_PASS)
+			loadlc(loccnt, 0);
+	}
 
-  /* size */
-  if (lablptr) {
-    lablptr->data_type = P_INCBIN;
-    lablptr->data_size = size;
-  }
-  else {
-    if (lastlabl) {
-      if (lastlabl->data_type == P_INCBIN)
-        lastlabl->data_size += size;
-    }
-  }
+	/* size */
+	if (lablptr) {
+		lablptr->data_type = P_INCBIN;
+		lablptr->data_size = size;
+	}
+	else {
+		if (lastlabl) {
+			if (lastlabl->data_type == P_INCBIN)
+				lastlabl->data_size += size;
+		}
+	}
 
-  /* output line */
-  if (pass == LAST_PASS)
-    println();
+	/* output line */
+	if (pass == LAST_PASS)
+		println();
 }
 
 
@@ -999,26 +999,26 @@ do_mx(char *fname)
  */
 
 void
-do_include(int *ip)
+do_include(int* ip)
 {
-  char fname[128];
+	char fname[128];
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* get file name */
-  if (!getstring(ip, fname, 127))
-    return;
+	/* get file name */
+	if (!getstring(ip, fname, 127))
+		return;
 
-  /* open file */
-  if (open_input(fname) == -1) {
-    fatal_error("Can not open file!");
-    return;
-  }
+	/* open file */
+	if (open_input(fname) == -1) {
+		fatal_error("Can not open file!");
+		return;
+	}
 
-  /* output line */
-  if (pass == LAST_PASS)
-    println();
+	/* output line */
+	if (pass == LAST_PASS)
+		println();
 }
 
 
@@ -1029,27 +1029,27 @@ do_include(int *ip)
  */
 
 void
-do_rsset(int *ip)
+do_rsset(int* ip)
 {
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* get value */
-  if (!evaluate(ip, ';'))
-    return;
-  if (value & 0xFFFF0000) {
-    error("Address out of range!");
-    return;
-  }
+	/* get value */
+	if (!evaluate(ip, ';'))
+		return;
+	if (value & 0xFFFF0000) {
+		error("Address out of range!");
+		return;
+	}
 
-  /* set 'rs' base */
-  rsbase = value;
+	/* set 'rs' base */
+	rsbase = value;
 
-  /* output line */
-  if (pass == LAST_PASS) {
-    loadlc(rsbase, 1);
-    println();
-  }
+	/* output line */
+	if (pass == LAST_PASS) {
+		loadlc(rsbase, 1);
+		println();
+	}
 }
 
 
@@ -1060,28 +1060,28 @@ do_rsset(int *ip)
  */
 
 void
-do_rs(int *ip)
+do_rs(int* ip)
 {
-  /* define label */
-  labldef(rsbase, 0);
+	/* define label */
+	labldef(rsbase, 0);
 
-  /* get the number of bytes to reserve */
-  if (!evaluate(ip, ';'))
-    return;
+	/* get the number of bytes to reserve */
+	if (!evaluate(ip, ';'))
+		return;
 
-  /* ouput line */
-  if (pass == LAST_PASS) {
-    loadlc(rsbase, 1);
-    println();
-  }
+	/* ouput line */
+	if (pass == LAST_PASS) {
+		loadlc(rsbase, 1);
+		println();
+	}
 
-  /* Size of variable */
-  lablptr->data_size = value;
+	/* Size of variable */
+	lablptr->data_size = value;
 
-  /* update 'rs' base */
-  rsbase += value;
-  if (rsbase & 0xFFFF0000)
-    error("Address out of range!");
+	/* update 'rs' base */
+	rsbase += value;
+	if (rsbase & 0xFFFF0000)
+		error("Address out of range!");
 }
 
 
@@ -1092,77 +1092,77 @@ do_rs(int *ip)
  */
 
 void
-do_ds(int *ip)
+do_ds(int* ip)
 {
-  int limit = 0;
-  int addr;
+	int limit = 0;
+	int addr;
 
-  /* define label */
-  labldef(loccnt, 1);
+	/* define label */
+	labldef(loccnt, 1);
 
-  /* get the number of bytes to reserve */
-  if (!evaluate(ip, ';'))
-    return;
+	/* get the number of bytes to reserve */
+	if (!evaluate(ip, ';'))
+		return;
 
-  /* section switch */
-  switch (section) {
-  case S_ZP:
-    /* zero page section */
-    limit = machine->zp_limit;
-    break;  
+	/* section switch */
+	switch (section) {
+	case S_ZP:
+		/* zero page section */
+		limit = machine->zp_limit;
+		break;
 
-  case S_BSS:
-    /* ram section */
-    limit = machine->ram_limit;
-    break;
+	case S_BSS:
+		/* ram section */
+		limit = machine->ram_limit;
+		break;
 
-  case S_CODE:
-  case S_DATA:
-    /* code and data sections */
-    limit = 0x2000;
-    break;
-  }
+	case S_CODE:
+	case S_DATA:
+		/* code and data sections */
+		limit = 0x2000;
+		break;
+	}
 
-  /* check range */
-  if ((loccnt + value) > limit) {
-    error("Out of range!");
-    return;
-  }
+	/* check range */
+	if ((loccnt + value) > limit) {
+		error("Out of range!");
+		return;
+	}
 
-  /* update max counter for zp and bss sections */
-  addr = loccnt + value;
+	/* update max counter for zp and bss sections */
+	addr = loccnt + value;
 
-  switch (section) {
-  case S_ZP:
-    /* zero page */
-    if (addr > max_zp)
-      max_zp = addr;
-    break;
+	switch (section) {
+	case S_ZP:
+		/* zero page */
+		if (addr > max_zp)
+			max_zp = addr;
+		break;
 
-  case S_BSS:
-    /* ram page */
-    if (addr > max_bss)
-      max_bss = addr;
-    break;
-  }
+	case S_BSS:
+		/* ram page */
+		if (addr > max_bss)
+			max_bss = addr;
+		break;
+	}
 
-  /* output line on last pass */
-  if (pass == LAST_PASS) {
-    switch (section) {
-    case S_CODE:
-    case S_DATA:
-      memset(&rom[bank][loccnt], 0, value);
-      memset(&map[bank][loccnt], section + (page << 5), value);
-      if (bank > max_bank)
-        max_bank = bank;
-      break;
-    }
-    loadlc(loccnt, 0);
-    println();
-  }
+	/* output line on last pass */
+	if (pass == LAST_PASS) {
+		switch (section) {
+		case S_CODE:
+		case S_DATA:
+			memset(&rom[bank][loccnt], 0, value);
+			memset(&map[bank][loccnt], section + (page << 5), value);
+			if (bank > max_bank)
+				max_bank = bank;
+			break;
+		}
+		loadlc(loccnt, 0);
+		println();
+	}
 
-  /* update location counter */
-  loccnt += value;
+	/* update location counter */
+	loccnt += value;
 }
 
 
@@ -1173,9 +1173,9 @@ do_ds(int *ip)
  */
 
 void
-do_fail(int *ip)
+do_fail(int* ip)
 {
-  fatal_error("Compilation failed!");
+	fatal_error("Compilation failed!");
 }
 
 
@@ -1186,36 +1186,36 @@ do_fail(int *ip)
  */
 
 void
-do_section(int *ip)
+do_section(int* ip)
 {
-  if (proc_ptr) {
-    if (optype == S_DATA) {
-      fatal_error("No data segment in procs!");
-      return;
-    }
-  }
-  if (section != optype) {
-    /* backup current section data */
-    section_bank[section] = bank;
-    bank_glabl[section][bank] = glablptr;
-    bank_loccnt[section][bank] = loccnt;
-    bank_page[section][bank] = page;
+	if (proc_ptr) {
+		if (optype == S_DATA) {
+			fatal_error("No data segment in procs!");
+			return;
+		}
+	}
+	if (section != optype) {
+		/* backup current section data */
+		section_bank[section] = bank;
+		bank_glabl[section][bank] = glablptr;
+		bank_loccnt[section][bank] = loccnt;
+		bank_page[section][bank] = page;
 
-    /* change section */
-    section = optype;
+		/* change section */
+		section = optype;
 
-    /* switch to the new section */
-    bank = section_bank[section];
-    page = bank_page[section][bank];
-    loccnt = bank_loccnt[section][bank];
-    glablptr = bank_glabl[section][bank];
-  }
+		/* switch to the new section */
+		bank = section_bank[section];
+		page = bank_page[section][bank];
+		loccnt = bank_loccnt[section][bank];
+		glablptr = bank_glabl[section][bank];
+	}
 
-  /* output line */
-  if (pass == LAST_PASS) {
-    loadlc(loccnt + (page << 13), 1);
-    println();
-  }
+	/* output line */
+	if (pass == LAST_PASS) {
+		loadlc(loccnt + (page << 13), 1);
+		println();
+	}
 }
 
 
@@ -1226,74 +1226,74 @@ do_section(int *ip)
  */
 
 void
-do_opt(int *ip)
+do_opt(int* ip)
 {
-  char c;
-  char flag;
-  char name[32];
-  int  opt;
-  int  i;
+	char c;
+	char flag;
+	char name[32];
+	int  opt;
+	int  i;
 
-  for (;;) {
-    /* skip spaces */
-    while (isspace((int)prlnbuf[*ip]))
-      (*ip)++;
+	for (;;) {
+		/* skip spaces */
+		while (isspace((int)prlnbuf[*ip]))
+			(*ip)++;
 
-    /* get char */
-    c = prlnbuf[(*ip)++];
+		/* get char */
+		c = prlnbuf[(*ip)++];
 
-    /* no option */
-    if (c == ',')
-      continue;
+		/* no option */
+		if (c == ',')
+			continue;
 
-    /* end of line */  
-    if (c == ';' || c == '\0')
-      break;
+		/* end of line */
+		if (c == ';' || c == '\0')
+			break;
 
-    /* extract option */
-    i = 0;
-    for (;;) {
-      if (c == ' ')
-        continue;
-      if (c == ',' || c == ';' || c == '\0')
-        break;
-      if (i > 31) {
-        error("Syntax error!");
-        return;
-      }
-      name[i++] = c;
-      c = prlnbuf[(*ip)++];
-    }
+		/* extract option */
+		i = 0;
+		for (;;) {
+			if (c == ' ')
+				continue;
+			if (c == ',' || c == ';' || c == '\0')
+				break;
+			if (i > 31) {
+				error("Syntax error!");
+				return;
+			}
+			name[i++] = c;
+			c = prlnbuf[(*ip)++];
+		}
 
-    /* get option flag */
-    name[i] = '\0';
-    flag = name[--i];
-    name[i] = '\0';
+		/* get option flag */
+		name[i] = '\0';
+		flag = name[--i];
+		name[i] = '\0';
 
-    /* search option */
-    if (!strcasecmp(name, "l"))
-      opt = OPT_LIST;
-    else if (!strcasecmp(name, "m"))
-      opt = OPT_MACRO;
-    else if (!strcasecmp(name, "w"))
-      opt = OPT_WARNING;
-    else if (!strcasecmp(name, "o"))
-      opt = OPT_OPTIMIZE;
-    else {
-      error("Unknown option!");
-      return;
-    }
+		/* search option */
+		if (!strcasecmp(name, "l"))
+			opt = OPT_LIST;
+		else if (!strcasecmp(name, "m"))
+			opt = OPT_MACRO;
+		else if (!strcasecmp(name, "w"))
+			opt = OPT_WARNING;
+		else if (!strcasecmp(name, "o"))
+			opt = OPT_OPTIMIZE;
+		else {
+			error("Unknown option!");
+			return;
+		}
 
-    /* set option */
-    if (flag == '+')
-      asm_opt[opt] = 1;
-    if (flag == '-')
-      asm_opt[opt] = 0;
-  }
+		/* set option */
+		if (flag == '+')
+			asm_opt[opt] = 1;
+		if (flag == '-')
+			asm_opt[opt] = 0;
+	}
 
-  /* output */
-  if (pass == LAST_PASS)
-    println();
+	/* output */
+	if (pass == LAST_PASS)
+		println();
 }
 
 
@@ -1303,26 +1303,26 @@ do_opt(int *ip)
  */
 
 int
-htoi(char *str, int nb)
+htoi(char* str, int nb)
 {
-  char c;
-  int val;
-  int i;
+	char c;
+	int val;
+	int i;
 
-  val = 0;
-  
-  for (i = 0; i < nb; i++) {
-     c = toupper(str[i]);
+	val = 0;
 
-    if ((c >= '0') && (c <= '9'))
-      val = (val << 4) + (c - '0');
-    else if ((c >= 'A') && (c <= 'F'))
-      val = (val << 4) + (c - 'A' + 10);
-    else
-      return (-1);
-  }
+	for (i = 0; i < nb; i++) {
+		c = toupper(str[i]);
 
-  /* ok */
-  return (val);
+		if ((c >= '0') && (c <= '9'))
+			val = (val << 4) + (c - '0');
+		else if ((c >= 'A') && (c <= 'F'))
+			val = (val << 4) + (c - 'A' + 10);
+		else
+			return (-1);
+	}
+
+	/* ok */
+	return (val);
 }
 
