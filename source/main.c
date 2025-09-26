@@ -28,21 +28,29 @@
 #define VERSION "v3.6"
 #define DESCRIPTION "a 6502 assembler with specific NES support"
 #define GITHUB_URL "https://github.com/ClusterM/nesasm/"
+#ifndef COMMIT
+#define COMMIT "0"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _WIN32
 #include <strings.h>
+#endif
 #include <string.h>
 #include <ctype.h>
-#include <argp.h>
 #include "defs.h"
 #include "externs.h"
 #include "protos.h"
 #include "vars.h"
 #include "inst.h"
+#ifndef _WIN32
 #include "commit.h"
-
-/* variables */
+#include <argp.h>
+#else
+#include <argp-standalone/argp.h>
+#endif
+ /* variables */
 unsigned char ipl_buffer[4096];
 char   *in_fname;  /* file names, input */
 char  bin_fname[1024];  /* binary */
@@ -268,7 +276,7 @@ main(int argc, char **argv)
   if (zero_fill==1) dump_seg = 0; // disable segment info as zero filling makes it inaccurate
 
   /* search file extension */
-  char basename[strlen(in_fname)+1];
+  char* basename = (char*)malloc(strlen(in_fname)+1);
   strcpy(basename, in_fname);
   if ((p = strrchr(basename, '.')) != NULL) {
     if (!strchr(p, PATH_SEPARATOR))
@@ -288,7 +296,8 @@ main(int argc, char **argv)
   {
     out_stdout = 1;
   }
-  char bin_basename[strlen(bin_fname)+1];
+  free(basename);
+  char* bin_basename=(char*)malloc(strlen(bin_fname)+1);
   strcpy(bin_basename, bin_fname);
   if ((p = strrchr(bin_basename, '.')) != NULL) {
     if (!strchr(p, PATH_SEPARATOR))
@@ -301,6 +310,7 @@ main(int argc, char **argv)
     strcpy(lst_fname, bin_basename);
     strcat(lst_fname, ".lst");
   }
+  free(bin_basename);
   if (!sym_fname[0])
   {
     strcpy(sym_fname, bin_fname);

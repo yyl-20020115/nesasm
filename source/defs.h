@@ -1,3 +1,6 @@
+#ifndef __DEFS_H__
+#define __DEFS_H__
+
 #define MAX_BANKS 4096
 #define BANK_SIZE 8192
 
@@ -242,3 +245,8 @@ typedef struct t_machine {
   int  (*pack_16x16_sprite)(unsigned char *, void *, int,  int);
   void (*write_header)(FILE *, int);
 } MACHINE;
+
+#ifdef _WIN32
+#define strcasecmp _stricmp
+#endif
+#endif

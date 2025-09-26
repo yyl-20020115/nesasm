@@ -1,5 +1,7 @@
 #include <stdio.h>
+#ifndef _WIN32
 #include <strings.h>
+#endif
 #include <string.h>
 #include <ctype.h>
 #include "defs.h"
