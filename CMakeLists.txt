@@ -3,6 +3,7 @@ project(nesasm C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+
 add_subdirectory(argp-standalone)
 
 # Add source files
